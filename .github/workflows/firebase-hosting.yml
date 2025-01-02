@@ -24,4 +24,4 @@ jobs:
       run: npm install -g firebase-tools
 
     - name: Deploy to Firebase
-      run: firebase deploy --only hosting
+      run: firebase deploy --only hosting --project nameage-ec0a2
