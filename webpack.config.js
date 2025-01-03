@@ -12,12 +12,12 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
+                test: /\.m?js$/, // JavaScript 파일 처리
+                exclude: /node_modules\/(?!(firebase)\/).*/, // Firebase 모듈은 변환에 포함
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env'],
+                        presets: ['@babel/preset-env'], // 최신 문법을 변환
                     },
                 },
             },
