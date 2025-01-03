@@ -11,6 +11,11 @@ module.exports = {
     mode: 'development',
     module: {
         rules: [
+              // CSS 파일 처리
+              {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
+            },
             {
                 test: /\.m?js$/, // JavaScript 파일 처리
                 exclude: /node_modules\/(?!(firebase)\/).*/, // Firebase 모듈은 변환에 포함

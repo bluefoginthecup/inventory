@@ -1,5 +1,7 @@
 // src/index.js
 import './script.js';  // /script.js를 Webpack에 포함시켜 번들링
+import './styles.css';
+
 
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set } from 'firebase/database';
