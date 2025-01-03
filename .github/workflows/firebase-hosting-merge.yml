@@ -14,8 +14,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        env:
+          FIREBASE_SERVICE_ACCOUNT_NAMEAGE_EC0A2: "placeholder_value" # 로컬 테스트용 임시 값
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_NAMEAGE_EC0A2 }}'
           channelId: live
           projectId: nameage-ec0a2
+
+          
