@@ -6303,7 +6303,8 @@ function getModularInstance(service) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
+/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
+/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
 //---------탭 관련 시작 ---------
 
 // 탭 전환 기능
@@ -6360,7 +6361,19 @@ var convertToKorean = function convertToKorean(name) {
 
 
 // Firebase 설정
-var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_0__.getDatabase)(app);
+var firebaseConfig = {
+  apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
+  authDomain: "nameage-ec0a2.firebaseapp.com",
+  databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nameage-ec0a2",
+  storageBucket: "nameage-ec0a2.firebasestorage.app",
+  messagingSenderId: "72793368901",
+  appId: "1:72793368901:web:55e93af625bf0c9193362c"
+};
+
+// Firebase 초기화
+var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
+var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)(app);
 
 // 검색 버튼 클릭 시
 document.getElementById('searchBtn').addEventListener('click', function () {
@@ -6373,9 +6386,9 @@ document.getElementById('searchBtn').addEventListener('click', function () {
 // 제품 검색 기능
 function searchProducts(searchTerm) {
   // Firebase에서 검색어에 맞는 데이터를 가져오기 위한 쿼리 작성
-  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_0__.ref)(db, 'stocks');
-  var productQuery = (0,firebase_database__WEBPACK_IMPORTED_MODULE_0__.query)(productsRef);
-  (0,firebase_database__WEBPACK_IMPORTED_MODULE_0__.onValue)(productQuery, function (snapshot) {
+  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks');
+  var productQuery = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.query)(productsRef);
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productQuery, function (snapshot) {
     var data = snapshot.val();
     var filteredProducts = [];
 
