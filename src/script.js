@@ -56,10 +56,22 @@ const convertToKorean = (name) => {
 
 
 //---------- 섹션 1 (제품검색) ----------
-
+import { initializeApp } from "firebase/app";
 import { getDatabase, ref, query, orderByKey, startAt, endAt, onValue } from "firebase/database";
 
 // Firebase 설정
+const firebaseConfig = {
+    apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
+    authDomain: "nameage-ec0a2.firebaseapp.com",
+   databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+   projectId: "nameage-ec0a2",
+    storageBucket: "nameage-ec0a2.firebasestorage.app",
+   messagingSenderId: "72793368901",
+   appId: "1:72793368901:web:55e93af625bf0c9193362c"
+};
+
+// Firebase 초기화
+const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // 검색 버튼 클릭 시
