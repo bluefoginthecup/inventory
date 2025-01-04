@@ -6303,108 +6303,14 @@ function getModularInstance(service) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
-/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-//---------탭 관련 시작 ---------
-
-// 탭 전환 기능
-document.getElementById('searchTab').addEventListener('click', function () {
-  activateTab('searchSection');
-});
-document.getElementById('inputTab').addEventListener('click', function () {
-  activateTab('inputSection');
-});
-document.getElementById('allStockTab').addEventListener('click', function () {
-  activateTab('allStockSection');
-});
-
-// 탭 활성화 함수
-function activateTab(sectionId) {
-  // 모든 섹션 숨기기
-  var sections = document.querySelectorAll('.section');
-  sections.forEach(function (section) {
-    section.classList.remove('active');
-  });
-
-  // 모든 탭 비활성화
-  var tabs = document.querySelectorAll('.tab-button');
-  tabs.forEach(function (tab) {
-    tab.classList.remove('active');
-  });
-
-  // 해당 섹션 활성화
-  document.getElementById(sectionId).classList.add('active');
-
-  // 해당 탭 활성화
-  var activeTab = document.getElementById(sectionId.replace('Section', 'Tab'));
-  activeTab.classList.add('active');
-}
-//----------------탭 관련 끝 ---------
-
-//영어->한글로 번역해서 출력
-
-var convertToKorean = function convertToKorean(name) {
-  var conversionMap = {
-    "pedro_ivory": "페드로 아이보리",
-    "pedro_gray": "페드로 그레이",
-    "pedro_blue": "페드로 블루",
-    "erica_white": "에리카 화이트",
-    "erica_navy": "에리카 네이비",
-    "erica_beige": "에리카 베이지",
-    "dotori_white": "도토리 화이트",
-    "dotori_coffee": "도토리 커피",
-    "rouen_gray": "루앙 그레이",
-    "rouen_beige": "루앙 베이지",
-    "rouen_gold": "루앙 골드",
-    "rouen_pink": "루앙 핑크",
-    "encia_white": "엔시아 화이트",
-    "encia_orange": "엔시아 오렌지",
-    "sobok_white": "소복소복 화이트",
-    "sobok_gray": "소복소복 그레이",
-    "sobok_indipink": "소복소복 인디핑크",
-    "lavender_gold": "라벤더 골드",
-    "iris_blue": "아이리스 블루",
-    "tatiana_rose": "타티아나 로즈",
-    "ronze_gray": "론즈 연회색",
-    "magritte_gray": "마그리트 연회색",
-    "magritte_denim": "마그리트 데님",
-    "magritte_beige": "마그리트 베이지",
-    "thistle_gray": "엉겅퀴 연회색",
-    "thistle_denim": "엉겅퀴 데님",
-    "thistle_kahki": "엉겅퀴 쑥색",
-    "30x50_cushion": "30x50 쿠션",
-    "40_cushion": "40 쿠션",
-    "50_cushion": "50 쿠션",
-    "45_basic": "45 기본형",
-    "50_basic": "50 기본형",
-    "50_frame": "50 액자형",
-    "60_basic": "60 기본형",
-    "45_winged": "45 날개형",
-    "50_winged": "50 날개형",
-    "hexagon_hanger": "육각형 등걸이",
-    "rectangle_hanger": "직사각 등걸이",
-    "frame_hanger": "액자형 등걸이",
-    "50_basic_back": "50 기본형 뒷지",
-    "45_winged_back": "45 날개형 뒷지",
-    "50_winged_back": "50 날개형 뒷지",
-    "finished": "완제품",
-    "embroidery": "자수물",
-    "cutting": "재단물",
-    "loose": "낱마",
-    "cut": "절"
-  };
-  return conversionMap[name] || name;
-};
-
-//---------- 섹션 1 (제품검색) ----------
+/* harmony import */ var _script_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script.js */ "./src/script.js");
+/* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.css */ "./src/styles.css");
+/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
+/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
+ // /script.js를 Webpack에 포함시켜 번들링
 
 
 
-// Firebase 설정
 var firebaseConfig = {
   apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
   authDomain: "nameage-ec0a2.firebaseapp.com",
@@ -6414,46 +6320,108 @@ var firebaseConfig = {
   messagingSenderId: "72793368901",
   appId: "1:72793368901:web:55e93af625bf0c9193362c"
 };
+var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_2__.initializeApp)(firebaseConfig);
+var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.getDatabase)(app);
 
-// Firebase 초기화
-var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
-var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)(app);
+// 탭 전환
+document.getElementById('searchTab').addEventListener('click', function () {
+  activateTab('searchSection');
+});
+document.getElementById('movementTab').addEventListener('click', function () {
+  activateTab('movementSection');
+});
+document.getElementById('allStockTab').addEventListener('click', function () {
+  activateTab('allStockSection');
+});
+function activateTab(sectionId) {
+  var sections = document.querySelectorAll('.section');
+  sections.forEach(function (section) {
+    section.classList.remove('active');
+  });
+  var tabs = document.querySelectorAll('.tab-button');
+  tabs.forEach(function (tab) {
+    tab.classList.remove('active');
+  });
+  document.getElementById(sectionId).classList.add('active');
+  var activeTab = document.getElementById(sectionId.replace('Section', 'Tab'));
+  activeTab.classList.add('active');
+}
 
-// 검색 버튼 클릭 시
+// 입고/출고 처리 함수
+function updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount) {
+  var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.ref)(db, 'stocks/' + stockDate + '/' + product + '/' + size + '/' + type);
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.onValue)(productRef, function (snapshot) {
+    var data = snapshot.val();
+    if (data) {
+      var currentStock = data.currentStock; // 기존 재고
+      var incoming = data.incoming || 0; // 기존 입고
+      var outgoing = data.outgoing || 0; // 기존 출고
+      var neededAmount = data.neededAmount; // 생산 필요량
+
+      var newIncoming = incoming + incomingAmount; // 입고 수량 갱신
+      var newOutgoing = outgoing + outgoingAmount; // 출고 수량 갱신
+      var remainingStock = currentStock + newIncoming - newOutgoing; // 남은 재고 계산
+
+      (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.set)(productRef, {
+        currentStock: currentStock,
+        // 기존 재고
+        incoming: newIncoming,
+        // 입고 수량
+        outgoing: newOutgoing,
+        // 출고 수량
+        remainingStock: remainingStock,
+        // 남은 재고
+        neededAmount: neededAmount // 생산 필요량
+      }).then(function () {
+        alert('재고 정보가 갱신되었습니다.');
+      })["catch"](function (error) {
+        console.error('재고 정보 갱신 실패:', error);
+        alert('재고 정보 갱신에 실패했습니다.');
+      });
+    } else {
+      console.log('해당 제품에 대한 재고 정보가 없습니다.');
+    }
+  });
+}
+
+// 입고/출고 처리 버튼 클릭
+document.getElementById('submitMovementButton').addEventListener('click', function () {
+  var stockDate = document.getElementById('stockDate').value;
+  var product = document.getElementById('product').value;
+  var size = document.getElementById('size').value;
+  var type = document.getElementById('type').value;
+  var incomingAmount = parseInt(document.getElementById('incomingAmount').value);
+  var outgoingAmount = parseInt(document.getElementById('outgoingAmount').value);
+  if (stockDate && product && size && type && !isNaN(incomingAmount) && !isNaN(outgoingAmount)) {
+    updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount);
+  } else {
+    alert('모든 필드를 입력해주세요.');
+  }
+});
+
+// 검색 기능 (기존 코드)
 document.getElementById('searchBtn').addEventListener('click', function () {
   var searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
   if (searchTerm) {
     searchProducts(searchTerm);
   }
 });
-
-// 제품 검색 기능
 function searchProducts(searchTerm) {
-  // Firebase에서 검색어에 맞는 데이터를 가져오기 위한 쿼리 작성
-  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks');
-  var productQuery = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.query)(productsRef);
-  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productQuery, function (snapshot) {
+  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.ref)(db, 'stocks');
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.onValue)(productsRef, function (snapshot) {
     var data = snapshot.val();
     var filteredProducts = [];
-
-    // 데이터 필터링: 검색어가 포함된 제품 찾기
     for (var product in data) {
       if (product.toLowerCase().includes(searchTerm)) {
-        // 대소문자 구분 없이 검색
         filteredProducts.push(data[product]);
       }
     }
-
-    // 테이블에 검색 결과 표시
     updateSearchTable(filteredProducts);
   });
 }
-
-// 검색 결과 테이블 업데이트
 function updateSearchTable(products) {
   var tableBody = document.getElementById('searchResults').querySelector('tbody');
-  tableBody.innerHTML = ''; // 기존 결과 삭제
-
+  tableBody.innerHTML = '';
   if (products.length === 0) {
     var noResultsRow = tableBody.insertRow();
     var cell = noResultsRow.insertCell(0);
@@ -6461,8 +6429,6 @@ function updateSearchTable(products) {
     cell.textContent = "검색 결과가 없습니다.";
     return;
   }
-
-  // 검색된 제품 목록을 테이블에 추가
   products.forEach(function (product) {
     for (var size in product) {
       for (var type in product[size]) {
@@ -6474,95 +6440,12 @@ function updateSearchTable(products) {
   });
 }
 
-//----------섹션 2 (재고 입력)------------
-
-// 제출 버튼 클릭 시
-document.getElementById('submitButton').addEventListener('click', function () {
-  var product = document.getElementById('product').value; // 방석 종류
-  var size = document.getElementById('size').value; // 사이즈
-  var type = document.getElementById('type').value; // 재고 종류
-  var stockAmount = parseInt(document.getElementById('stockAmount').value); // 현재 재고
-  var neededAmount = parseInt(document.getElementById('neededAmount').value); // 생산 필요량
-
-  if (product && size && type && !isNaN(stockAmount) && !isNaN(neededAmount)) {
-    // Firebase에 데이터 저장
-    saveStockData(product, size, type, stockAmount, neededAmount);
-  } else {
-    alert('모든 필드를 입력해주세요.');
-  }
-});
-
-// Firebase에 재고 데이터 저장 함수
-function saveStockData(product, size, type, stockAmount, neededAmount) {
-  // Firebase 데이터 경로
-  var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks/' + product + '/' + size + '/' + type); // product는 제품 종류
-  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.set)(productRef, {
-    stockAmount: stockAmount,
-    // 현재 재고
-    neededAmount: neededAmount // 생산 필요량
-  }).then(function () {
-    alert('재고 정보가 저장되었습니다.');
-    document.getElementById('stockForm').reset(); // 폼 초기화
-  })["catch"](function (error) {
-    console.error('데이터 저장 실패:', error);
-    alert('재고 정보를 저장하는데 실패했습니다.');
-  });
-}
-
-//---------- 섹션 3 (전체 재고) ----------
-
-// 전체 재고 테이블 업데이트
-function updateAllStockTable(products) {
-  var tableBody = document.getElementById('allStockTable').querySelector('tbody');
-  tableBody.innerHTML = ''; // 기존 결과 삭제
-
-  if (products.length === 0) {
-    var noResultsRow = tableBody.insertRow();
-    var cell = noResultsRow.insertCell(0);
-    cell.colSpan = 5;
-    cell.textContent = "전체 재고가 없습니다.";
-    return;
-  }
-
-  // 전체 재고 목록을 테이블에 추가
-  products.forEach(function (product) {
-    var productName = Object.keys(product)[0];
-    var productNameKorean = convertToKorean(productName); // 제품명 한글로 변환
-    for (var size in product[productName]) {
-      if (product[productName].hasOwnProperty(size)) {
-        // size의 각 타입별로 순회 
-        for (var type in product[productName][size]) {
-          if (product[productName][size].hasOwnProperty(type)) {
-            var stockItem = product[productName][size][type];
-            var row = tableBody.insertRow();
-            row.innerHTML = "\n                            <td>".concat(productNameKorean, "</td>\n                            <td>").concat(convertToKorean(size), "</td>\n                            <td>").concat(convertToKorean(type), "</td>\n                            <td>").concat(stockItem.stockAmount, "</td>\n                            <td>").concat(stockItem.neededAmount, "</td>\n                ");
-          }
-        }
-      }
-    }
-  });
-}
-
-// Firebase에서 전체 재고 정보 불러오기
-function loadAllStock() {
-  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks'); // Firebase에서 재고 정보 가져오기
-  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productsRef, function (snapshot) {
-    var data = snapshot.val();
-    var allProducts = [];
-
-    // 전체 제품 정보 불러오기
-    for (var product in data) {
-      allProducts.push(_defineProperty({}, product, data[product]));
-    }
-
-    // 테이블에 전체 재고 표시
-    updateAllStockTable(allProducts);
-  });
-}
-
-// 페이지가 로드될 때 전체 재고를 불러옴
-window.onload = function () {
-  loadAllStock();
+// 한글로 변환 함수 (기존 코드)
+var convertToKorean = function convertToKorean(name) {
+  var conversionMap = {
+    // 영어 -> 한글 변환
+  };
+  return conversionMap[name] || name;
 };
 
 /***/ }),

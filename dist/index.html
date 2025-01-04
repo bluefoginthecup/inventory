@@ -11,113 +11,70 @@
         <!-- 탭 메뉴 -->
         <div class="tab-container">
             <button class="tab-button active" id="searchTab">재고 검색</button>
-            <button class="tab-button" id="inputTab">재고 입력</button>
+            <button class="tab-button" id="movementTab">입고/출고</button>
             <button class="tab-button" id="allStockTab">전체 재고</button>
         </div>
 
         <!-- 섹션 1: 재고 검색 -->
-       <section id="searchSection" class="section active">
-    <h2>재고 검색</h2>
-    <input type="text" id="searchInput" placeholder="검색할 방석 종류 입력">
-    <button id="searchBtn">검색</button>
-    <table id="searchResults">
-        <thead>
-            <tr>
-                <th>제품</th>
-                <th>사이즈</th>
-                <th>재고 종류</th>
-                <th>현재 재고</th>
-                <th>생산 필요량</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- 검색 결과 테이블 -->
-        </tbody>
-    </table>
-</section>
+        <section id="searchSection" class="section active">
+            <h2>재고 검색</h2>
+            <input type="text" id="searchInput" placeholder="검색할 방석 종류 입력">
+            <button id="searchBtn">검색</button>
+            <table id="searchResults">
+                <thead>
+                    <tr>
+                        <th>제품</th>
+                        <th>사이즈</th>
+                        <th>재고 종류</th>
+                        <th>현재 재고</th>
+                        <th>생산 필요량</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 검색 결과 테이블 -->
+                </tbody>
+            </table>
+        </section>
 
+        <!-- 섹션 2: 입고/출고 처리 -->
+        <section id="movementSection" class="section">
+            <h2>입고/출고</h2>
+            <form id="stockMovementForm">
+                <label for="stockDate">날짜:</label>
+                <input type="date" id="stockDate" name="stockDate" required>
 
-        <!-- 섹션 2: 제품 재고 입력 -->
-<section id="inputSection" class="section">
-    <h2>제품 재고 입력</h2>
-    <form id="stockForm">
-        <!-- 방석 종류 선택 -->
-        <label for="product">디자인:</label>
-        <select id="product" name="product" required>
-            <option value="pedro_ivory">페드로 아이보리</option>
-            <option value="pedro_gray">페드로 그레이</option>
-            <option value="pedro_blue">페드로 블루</option>
-            <option value="erica_white">에리카 화이트</option>
-            <option value="erica_navy">에리카 네이비</option>
-            <option value="erica_beige">에리카 베이지</option>
-            <option value="dotori_white">도토리 화이트</option>
-            <option value="dotori_coffee">도토리 커피</option>
-            <option value="rouen_gray">루앙 그레이</option>  <!-- 수정된 부분 -->
-            <option value="rouen_beige">루앙 베이지</option> <!-- 수정된 부분 -->
-            <option value="rouen_gold">루앙 골드</option>  <!-- 수정된 부분 -->
-            <option value="rouen_pink">루앙 핑크</option>  <!-- 수정된 부분 -->
-            <option value="encia_white">엔시아 화이트</option> <!-- 수정된 부분 -->
-            <option value="encia_orange">엔시아 오렌지</option> <!-- 수정된 부분 -->
-            <option value="sobok_white">소복소복 화이트</option>
-            <option value="sobok_gray">소복소복 그레이</option>
-            <option value="sobok_indipink">소복소복 인디핑크</option>
-            <option value="lavender_gold">라벤더 골드</option>
-            <option value="iris_blue">아이리스 블루</option>
-            <option value="tatiana_rose">타티아나 로즈</option> <!-- 수정된 부분 -->
-            <option value="ronze_lightgray">론즈 연그레이</option> <!-- 수정된 부분 -->
-            <option value="magritte_lightgray">마그리트 연회색</option> <!-- 수정된 부분 -->
-            <option value="magritte_denim">마그리트 데님</option>
-            <option value="magritte_beige">마그리트 베이지</option> <!-- 수정된 부분 -->
-            <option value="thistle_lightgray">엉겅퀴 연회색</option> <!-- 수정된 부분 -->
-            <option value="thistle_denim">엉겅퀴 데님</option> <!-- 수정된 부분 -->
-            <option value="thistle_kahki">엉겅퀴 쑥색</option> <!-- 수정된 부분 -->
-       
-        </select>
-    
-        <!-- 사이즈 선택 -->
-        <label for="size">사이즈/품목:</label>
-        <select id="size" name="size" required>
-            <option value="30x50_cushion">30x50 쿠션</option>
-            <option value="40_cushion">40 쿠션</option>
-            <option value="50_cushion">50 쿠션</option>
-            <option value="45_basic">45 기본형</option>
-            <option value="50_basic">50 기본형</option>
-            <option value="50_frame">50 액자형</option>
-            <option value="60_basic">60 기본형</option>
-            <option value="45_winged">45 날개형</option>
-            <option value="50_winged">50 날개형</option>
-            <option value="hexagon_hanger">육각형 등걸이</option>
-            <option value="rectangle_hanger">직사각 등걸이</option>
-            <option value="frame_hanger">액자형 등걸이</option>
-            <option value="50_basic_back">50 기본형 뒷지</option>
-            <option value="45_winged_back">45 날개형 뒷지</option>
-            <option value="50_winged_back">50 날개형 뒷지</option>
-        </select>
+                <label for="product">제품명:</label>
+                <select id="product" name="product" required>
+                    <option value="pedro_ivory">페드로 아이보리</option>
+                    <option value="pedro_gray">페드로 그레이</option>
+                    <option value="pedro_blue">페드로 블루</option>
+                    <!-- 추가 제품 옵션 -->
+                </select>
 
-        <!-- 재고 종류 선택 -->
-        <label for="type">재고 종류:</label>
-        <select id="type" name="type" required>
-            <option value="finished">완제품</option>
-            <option value="embroidery">자수물</option>
-            <option value="cutting">재단물</option>
-            <option value="loose">낱마</option>
-            <option value="cut">절</option>
-        </select>
+                <label for="size">사이즈:</label>
+                <select id="size" name="size" required>
+                    <option value="30x50_cushion">30x50 쿠션</option>
+                    <option value="40_cushion">40 쿠션</option>
+                    <!-- 추가 사이즈 옵션 -->
+                </select>
 
-        <!-- 현재 재고 입력 -->
-        <label for="stockAmount">현재 재고:</label>
-        <input type="number" id="stockAmount" name="stockAmount" required>
+                <label for="type">재고 종류:</label>
+                <select id="type" name="type" required>
+                    <option value="finished">완제품</option>
+                    <option value="embroidery">자수물</option>
+                    <option value="cutting">재단물</option>
+                    <!-- 추가 재고 종류 옵션 -->
+                </select>
 
-        <!-- 생산 필요량 입력 -->
-        <label for="neededAmount">생산/주문 필요량:</label>
-        <input type="number" id="neededAmount" name="neededAmount" required>
+                <label for="incomingAmount">입고 수량:</label>
+                <input type="number" id="incomingAmount" name="incomingAmount" required>
 
-        <button type="button" id="submitButton">제출</button>
-    </form>
-</section>
+                <label for="outgoingAmount">출고 수량:</label>
+                <input type="number" id="outgoingAmount" name="outgoingAmount" required>
 
-        
-       
+                <button type="button" id="submitMovementButton">입고/출고 처리</button>
+            </form>
+        </section>
 
         <!-- 섹션 3: 전체 재고 -->
         <section id="allStockSection" class="section">
