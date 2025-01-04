@@ -1,108 +1,42 @@
-/*!******************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./src/styles.css ***!
-  \******************************************************************/
-/* 기본적인 스타일 설정 */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
+/* 탭 스타일 */
+.tab-container {
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* 세로 정렬 */
-    height: 100vh;
-    padding-top: 50px; /* 화면 위쪽 여백 */
-}
-
-/* 페이지 전체 컨테이너 */
-h2 {
-    text-align: center;
-    color: #333;
+    justify-content: space-around;
     margin-bottom: 20px;
 }
 
-/* 폼 입력 컨테이너 */
-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column; /* 세로로 배치 */
-}
-
-/* 라벨 스타일 */
-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
-    color: #555;
-}
-
-/* 입력 필드 스타일 */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0; /* 위/아래 여백 */
+.tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #f1f1f1;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box;
+    transition: background-color 0.3s ease;
 }
 
-/* 버튼 스타일 */
-button {
-    width: 100%;
-    padding: 12px;
+.tab-button:hover {
+    background-color: #e0e0e0;
+}
+
+.tab-button.active {
     background-color: #4CAF50;
     color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px; /* 버튼 위 여백 */
 }
 
-button:hover {
-    background-color: #45a049;
+.section {
+    display: none; /* 기본적으로 모든 섹션은 숨김 */
 }
 
-/* 테이블 스타일 */
-table {
-    width: 100%;
-    border-collapse: collapse;
+.section.active {
+    display: block;
+}
+
+/* 섹션 스타일 */
+section {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
     margin-top: 20px;
 }
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 10px;
-    text-align: center;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* 작은 화면에서 폼 요소 크기 조정 */
-@media (max-width: 600px) {
-    form {
-        width: 90%;
-    }
-
-    table {
-        font-size: 14px;
-    }
-}
-
-
-/*# sourceMappingURL=styles.css.map*/

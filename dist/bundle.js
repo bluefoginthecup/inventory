@@ -6310,13 +6310,13 @@ __webpack_require__.r(__webpack_exports__);
 
 // Firebase 설정
 var firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
+  authDomain: "nameage-ec0a2.firebaseapp.com",
+  databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nameage-ec0a2",
+  storageBucket: "nameage-ec0a2.firebasestorage.app",
+  messagingSenderId: "72793368901",
+  appId: "1:72793368901:web:55e93af625bf0c9193362c"
 };
 
 // Firebase 초기화
