@@ -1,54 +1,72 @@
-
- // Import the functions you need from the SDKs you need
-// Firebase 모듈 가져오기
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, set, onValue } from "firebase/database";
 
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+// Firebase 설정
 const firebaseConfig = {
-  apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
-  authDomain: "nameage-ec0a2.firebaseapp.com",
-  databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nameage-ec0a2",
-  storageBucket: "nameage-ec0a2.firebasestorage.app",
-  messagingSenderId: "72793368901",
-  appId: "1:72793368901:web:55e93af625bf0c9193362c"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
+// Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-
-
+// 폼 제출 버튼 클릭 시
 document.getElementById('submitButton').addEventListener('click', function() {
-    const name = document.getElementById('name').value;
-    const age = document.getElementById('age').value;
+    const product = document.getElementById('product').value;
+    const size = document.getElementById('size').value;
+    const type = document.getElementById('type').value;
+    const stockAmount = document.getElementById('stockAmount').value;
+    const neededAmount = document.getElementById('neededAmount').value;
 
-    if (name && age) {
-        // 테이블에 데이터 추가
-        const tableBody = document.getElementById('dataTable').querySelector('tbody');
-        const newRow = document.createElement('tr');
-        const rowNumber = tableBody.rows.length + 1; // 현재 행 개수 + 1이 번호
-
-        newRow.innerHTML = `<td>${rowNumber}</td><td>${name}</td><td>${age}</td>`;
-        tableBody.appendChild(newRow);
-
-         // Firebase에 데이터 저장 
-        
-         const userRef = ref(db, 'users');
-         push(userRef, { name, age })
-             .then(() => console.log('Data saved to Firebase'))
-             .catch(error => console.error('Firebase Error:', error));
-
-        // 입력 필드 초기화
-        document.getElementById('name').value = '';
-        document.getElementById('age').value = '';
+    // 유효성 검사
+    if (stockAmount && neededAmount) {
+        // Firebase에 재고 데이터 저장
+        updateStockData(product, size, type, stockAmount, neededAmount);
     } else {
         alert('모든 필드를 입력해주세요.');
     }
 });
+
+// Firebase에 재고 데이터 업데이트
+const updateStockData = (product, size, type, stockAmount, neededAmount) => {
+    const stockItemRef = ref(db, `stocks/${product}/${size}/${type}`);
+    set(stockItemRef, { stockAmount, neededAmount })
+        .then(() => console.log('Stock updated successfully'))
+        .catch((error) => console.error('Error updating stock:', error));
+};
+
+// Firebase에서 재고 데이터 불러오기
+const stockRef = ref(db, 'stocks');
+onValue(stockRef, (snapshot) => {
+    const data = snapshot.val();
+    updateStockTable(data);
+});
+
+// 테이블 업데이트 함수
+const updateStockTable = (data) => {
+    const tableBody = document.getElementById('stockTable').querySelector('tbody');
+    tableBody.innerHTML = ''; // 테이블 초기화
+
+    for (const product in data) {
+        for (const size in data[product]) {
+            for (const type in data[product][size]) {
+                const stockItem = data[product][size][type];
+                const row = tableBody.insertRow();
+
+                row.innerHTML = `
+                    <td>${product}</td>
+                    <td>${size}</td>
+                    <td>${type}</td>
+                    <td>${stockItem.stockAmount}</td>
+                    <td>${stockItem.neededAmount}</td>
+                `;
+            }
+        }
+    }
+};

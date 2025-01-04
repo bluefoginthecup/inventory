@@ -6305,59 +6305,76 @@ function getModularInstance(service) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
 /* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
-// Import the functions you need from the SDKs you need
-// Firebase 모듈 가져오기
 
 
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+// Firebase 설정
 var firebaseConfig = {
-  apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
-  authDomain: "nameage-ec0a2.firebaseapp.com",
-  databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nameage-ec0a2",
-  storageBucket: "nameage-ec0a2.firebasestorage.app",
-  messagingSenderId: "72793368901",
-  appId: "1:72793368901:web:55e93af625bf0c9193362c"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
+// Firebase 초기화
 var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
 var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)(app);
+
+// 폼 제출 버튼 클릭 시
 document.getElementById('submitButton').addEventListener('click', function () {
-  var name = document.getElementById('name').value;
-  var age = document.getElementById('age').value;
-  if (name && age) {
-    // 테이블에 데이터 추가
-    var tableBody = document.getElementById('dataTable').querySelector('tbody');
-    var newRow = document.createElement('tr');
-    var rowNumber = tableBody.rows.length + 1; // 현재 행 개수 + 1이 번호
+  var product = document.getElementById('product').value;
+  var size = document.getElementById('size').value;
+  var type = document.getElementById('type').value;
+  var stockAmount = document.getElementById('stockAmount').value;
+  var neededAmount = document.getElementById('neededAmount').value;
 
-    newRow.innerHTML = "<td>".concat(rowNumber, "</td><td>").concat(name, "</td><td>").concat(age, "</td>");
-    tableBody.appendChild(newRow);
-
-    // Firebase에 데이터 저장 
-
-    var userRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'users');
-    (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.push)(userRef, {
-      name: name,
-      age: age
-    }).then(function () {
-      return console.log('Data saved to Firebase');
-    })["catch"](function (error) {
-      return console.error('Firebase Error:', error);
-    });
-
-    // 입력 필드 초기화
-    document.getElementById('name').value = '';
-    document.getElementById('age').value = '';
+  // 유효성 검사
+  if (stockAmount && neededAmount) {
+    // Firebase에 재고 데이터 저장
+    updateStockData(product, size, type, stockAmount, neededAmount);
   } else {
     alert('모든 필드를 입력해주세요.');
   }
 });
+
+// Firebase에 재고 데이터 업데이트
+var updateStockData = function updateStockData(product, size, type, stockAmount, neededAmount) {
+  var stockItemRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, "stocks/".concat(product, "/").concat(size, "/").concat(type));
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.set)(stockItemRef, {
+    stockAmount: stockAmount,
+    neededAmount: neededAmount
+  }).then(function () {
+    return console.log('Stock updated successfully');
+  })["catch"](function (error) {
+    return console.error('Error updating stock:', error);
+  });
+};
+
+// Firebase에서 재고 데이터 불러오기
+var stockRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks');
+(0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(stockRef, function (snapshot) {
+  var data = snapshot.val();
+  updateStockTable(data);
+});
+
+// 테이블 업데이트 함수
+var updateStockTable = function updateStockTable(data) {
+  var tableBody = document.getElementById('stockTable').querySelector('tbody');
+  tableBody.innerHTML = ''; // 테이블 초기화
+
+  for (var product in data) {
+    for (var size in data[product]) {
+      for (var type in data[product][size]) {
+        var stockItem = data[product][size][type];
+        var row = tableBody.insertRow();
+        row.innerHTML = "\n                    <td>".concat(product, "</td>\n                    <td>").concat(size, "</td>\n                    <td>").concat(type, "</td>\n                    <td>").concat(stockItem.stockAmount, "</td>\n                    <td>").concat(stockItem.neededAmount, "</td>\n                ");
+      }
+    }
+  }
+};
 
 /***/ }),
 

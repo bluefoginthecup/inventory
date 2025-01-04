@@ -1,68 +1,106 @@
+/* 기본적인 스타일 설정 */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     height: 100vh;
-    margin: 0;
-    background-color: #f4f4f4;
-    flex-direction: column;
+    padding-top: 50px;
 }
-.form-container {
-    background: #fff;
+
+/* 전체 컨테이너 */
+.container {
+    width: 100%;
+    max-width: 800px;  /* 최대 너비 제한 */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 제목 */
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 섹션 스타일 */
+section {
+    margin-bottom: 40px;  /* 섹션 간 여백 */
+}
+
+/* 폼 입력 섹션 */
+.form-section h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+form {
+    background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
 }
-.form-container h2 {
-    margin-bottom: 20px;
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #555;
 }
-.form-container input {
+
+input, select {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
 }
-.form-container button {
-    background-color: #007BFF;
-    color: #fff;
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
-    padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
 }
-.form-container button:hover {
-    background-color: #0056b3;
+
+button:hover {
+    background-color: #45a049;
 }
-.table-container {
-    width: 80%;
-    max-width: 600px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+/* 테이블 섹션 */
+.table-section h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
 }
-table th, table td {
+
+table, th, td {
     border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-table th {
-    background-color: #007BFF;
-    color: white;
 }
 
-table th:first-child,
-table td:first-child {
-    width: 50px;
+th, td {
+    padding: 10px;
     text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
 }
