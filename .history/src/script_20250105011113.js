@@ -98,7 +98,7 @@ const convertToKorean = (name) => {
 
 //---------- 섹션 1 (제품검색) ----------
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set,query, orderByKey, startAt, endAt, onValue } from "firebase/database";
+import { getDatabase, ref, set, query, push, orderByKey, startAt, endAt, onValue } from "firebase/database";
 
 // Firebase 설정
 const firebaseConfig = {
@@ -114,6 +114,11 @@ const firebaseConfig = {
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+
+
+
+
 
 // 검색 버튼 클릭 시
 document.getElementById('searchBtn').addEventListener('click', function() {
@@ -165,7 +170,7 @@ function updateSearchTable(products) {
                 const stockItem = product[size][type];
                 const row = tableBody.insertRow();
                 row.innerHTML = `
-                    <td></td>
+                    <td>${convertToKorean(product)}</td>
                     <td>${convertToKorean(size)}</td>
                     <td>${convertToKorean(type)}</td>
                     <td>${stockItem.stockAmount}</td>
@@ -178,29 +183,85 @@ function updateSearchTable(products) {
 
 //----------섹션 2 (재고 입력)------------
 
+// 변동량 선택: 재고 추가 / 출고
+let isAddingStock = true;  // 기본값은 재고 추가
+
+// 재고 추가 버튼 클릭
+document.getElementById('addChange').addEventListener('click', function() {
+    isAddingStock = true;
+    document.getElementById('stockChange').setAttribute('placeholder', '추가할 수량 입력');
+});
+
+// 출고 버튼 클릭
+document.getElementById('subtractChange').addEventListener('click', function() {
+    isAddingStock = false;
+    document.getElementById('stockChange').setAttribute('placeholder', '출고할 수량 입력');
+});
+
+// Firebase에서 변동 기록을 테이블에 표시하기
+function loadStockChangeHistory(product, size, type) {
+    const stockRef = ref(db, 'stocks/' + product + '/' + size + '/' + type + '/changes');
+    onValue(stockRef, (snapshot) => {
+        const data = snapshot.val();
+        const tableBody = document.getElementById('stockChangeHistory').querySelector('tbody');
+        tableBody.innerHTML = ''; // 기존 결과 삭제
+
+        if (data) {
+            // 변동 기록 데이터를 테이블에 추가
+            for (const key in data) {
+                const changeRecord = data[key];
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${changeRecord.date}</td>
+                    <td>${changeRecord.change}</td>
+                `;
+            }
+        } else {
+            // 변동 기록이 없으면 "없음" 표시
+            const noResultsRow = tableBody.insertRow();
+            const cell = noResultsRow.insertCell(0);
+            cell.colSpan = 2;
+            cell.textContent = "변동 기록이 없습니다.";
+        }
+    });
+}
+
 // 제출 버튼 클릭 시
 document.getElementById('submitButton').addEventListener('click', function() {
     const product = document.getElementById('product').value;  // 방석 종류
     const size = document.getElementById('size').value;        // 사이즈
     const type = document.getElementById('type').value;        // 재고 종류
     const stockAmount = parseInt(document.getElementById('stockAmount').value);  // 현재 재고
-    const neededAmount = parseInt(document.getElementById('neededAmount').value);  // 생산 필요량
-
-    if (product && size && type && !isNaN(stockAmount) && !isNaN(neededAmount)) {
-        // Firebase에 데이터 저장
-        saveStockData(product, size, type, stockAmount, neededAmount);
-    } else {
-        alert('모든 필드를 입력해주세요.');
+    const neededAmount = parseInt(document.getElementById('neededAmount').value);  // 생산 필요량 
+    const stockChange = parseInt(document.getElementById('stockChange').value);  // 재고 변동량
+     const stockDate = document.getElementById('stockDate').value;
+    const change = isAddingStock ? stockChange : -stockChange;
+      
+    // 필수 필드가 모두 입력되었는지 확인
+    if (!product || !size || !type) {
+        alert('디자인, 사이즈/품목, 재고 종류는 필수로 입력해야 합니다.');
+        return; 
     }
+
+    // 재고, 생산 필요량, 변동량 중 하나라도 입력되었는지 확인
+    if (isNaN(stockAmount) && isNaN(neededAmount) && isNaN(stockChange)) {
+        alert('현재 재고, 생산 필요량, 또는 재고 변동량 중 하나는 입력해야 합니다.');
+        return;  // 셋 중 하나라도 입력되지 않으면 제출되지 않도록 종료
+    }
+
+   
+      saveStockData(product, size, type, stockAmount, neededAmount, change, stockDate);
 });
 
 // Firebase에 재고 데이터 저장 함수
-function saveStockData(product, size, type, stockAmount, neededAmount) {
-    // Firebase 데이터 경로
-    const productRef = ref(db, 'stocks/' + product + '/' + size + '/' + type);  // product는 제품 종류
+function saveStockData(product, size, type, stockAmount, neededAmount, change, stockDate) {
+    const productRef = ref(db, 'stocks/' + product + '/' + size + '/' + type); 
+    
+    // 재고 수량 업데이트
     set(productRef, {
-        stockAmount: stockAmount,  // 현재 재고
-        neededAmount: neededAmount  // 생산 필요량
+        stockAmount: stockAmount + change,  // 업데이트된 재고
+        neededAmount: neededAmount,
+        stockDate: stockDate  // 날짜 추가
     })
     .then(() => {
         alert('재고 정보가 저장되었습니다.');
@@ -212,9 +273,9 @@ function saveStockData(product, size, type, stockAmount, neededAmount) {
     });
 }
 
-//---------- 섹션 3 (전체 재고) ----------
 
-// 전체 재고 테이블 업데이트
+
+// 섹션 3에서 재고 데이터 표시 (날짜 포함)
 function updateAllStockTable(products) {
     const tableBody = document.getElementById('allStockTable').querySelector('tbody');
     tableBody.innerHTML = ''; // 기존 결과 삭제
@@ -222,7 +283,7 @@ function updateAllStockTable(products) {
     if (products.length === 0) {
         const noResultsRow = tableBody.insertRow();
         const cell = noResultsRow.insertCell(0);
-        cell.colSpan = 5;
+        cell.colSpan = 6;
         cell.textContent = "전체 재고가 없습니다.";
         return;
     }
@@ -244,6 +305,7 @@ function updateAllStockTable(products) {
                             <td>${convertToKorean(type)}</td>
                             <td>${stockItem.stockAmount}</td>
                             <td>${stockItem.neededAmount}</td>
+                            <td>${stockItem.stockDate}</td> 
                 `;
                 }
             }
@@ -273,3 +335,4 @@ function loadAllStock() {
 window.onload = function() {
     loadAllStock();
 };
+
