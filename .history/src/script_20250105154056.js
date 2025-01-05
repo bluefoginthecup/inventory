@@ -37,10 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
         activateTab('searchSection');
     });
 
-    document.getElementById('movementTab').addEventListener('click', function() {
-        activateTab('movementSection'); // movementSection으로 전환
+    document.getElementById('inputTab').addEventListener('click', function() {
+        activateTab('inputSection');
     });
-    
 
     document.getElementById('allStockTab').addEventListener('click', function() {
         activateTab('allStockSection');
@@ -374,57 +373,3 @@ function loadAllStock() {
 window.onload = function() {
     loadAllStock();  // Firebase에서 전체 재고를 불러와서 테이블 갱신
 };
-
-
-//----------- 섹션 4 날짜별 입출고 기록
-
-//1. 기록 보기 버튼 이벤트 추가
-document.getElementById('viewLogsButton').addEventListener('click', function() {
-    const logDate = document.getElementById('logDate').value;
-
-    if (logDate) {
-        loadDailyLogs(logDate); // 날짜별 기록 불러오기
-    } else {
-        alert('날짜를 선택해주세요.');
-    }
-});
-
-//2. 날짜별 기록 데이터 로드 함수
-function loadDailyLogs(date) {
-    const logsRef = ref(db, `logs/${date}`); // 날짜별 Firebase 경로
-    onValue(logsRef, (snapshot) => {
-        const data = snapshot.val();
-        updateDailyLogsTable(date, data);
-    }, (error) => {
-        console.error('Firebase 기록 로딩 오류:', error);
-        alert('기록 데이터를 로드하는 중 오류가 발생했습니다.');
-    });
-}
-
-//3. 테이블 업데이트 함수
-function updateDailyLogsTable(date, logs) {
-    const tableBody = document.getElementById('dailyLogsTable').querySelector('tbody');
-    tableBody.innerHTML = ''; // 기존 데이터 초기화
-
-    if (!logs) {
-        const noDataRow = tableBody.insertRow();
-        const cell = noDataRow.insertCell(0);
-        cell.colSpan = 6;
-        cell.textContent = `${date}의 기록이 없습니다.`;
-        return;
-    }
-
-    // 로그 데이터 테이블에 추가
-    for (const product in logs) {
-        const productData = logs[product];
-        const row = tableBody.insertRow();
-        row.innerHTML = `
-            <td>${date}</td>
-            <td>${convertToKorean(product)}</td>
-            <td>${productData.stockAmount || 0}</td>
-            <td>${productData.neededAmount || 0}</td>
-            <td>${productData.incomingAmount || 0}</td>
-            <td>${productData.outgoingAmount || 0}</td>
-        `;
-    }
-}

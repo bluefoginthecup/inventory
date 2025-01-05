@@ -1,50 +1,17 @@
 //---------탭 관련 시작 ---------
 
-// dom으로 감싸기 + 탭 전환 기능
-document.addEventListener('DOMContentLoaded', function() {
-    const searchTab = document.getElementById('searchTab');
-    const movementTab = document.getElementById('movementTab'); // 올바른 ID
-    const allStockTab = document.getElementById('allStockTab');
+// 탭 전환 기능
+document.getElementById('searchTab').addEventListener('click', function() {
+    activateTab('searchSection');
+});
 
-    if (searchTab) {
-        searchTab.addEventListener('click', function() {
-            activateTab('searchSection');
-        });
+document.getElementById('inputTab').addEventListener('click', function() {
+    activateTab('inputSection');
+});
 
-    } else {
-        console.error('searchTab 요소를 찾을 수 없습니다.');
-    }
-   
-    if (movementTab) { // inputTab -> movementTab
-            movementTab.addEventListener('click', function() {
-                activateTab('movementSection');
-            });
-    } else {
-            console.error('movementTab 요소를 찾을 수 없습니다.');
-        }
-    
-    if (allStockTab) {
-            allStockTab.addEventListener('click', function() {
-                activateTab('allStockSection');
-            });
-    } else {
-            console.error('allStockTab 요소를 찾을 수 없습니다.');
-        }
-    });
-
-
-    document.getElementById('searchTab').addEventListener('click', function() {
-        activateTab('searchSection');
-    });
-
-    document.getElementById('movementTab').addEventListener('click', function() {
-        activateTab('movementSection'); // movementSection으로 전환
-    });
-    
-
-    document.getElementById('allStockTab').addEventListener('click', function() {
-        activateTab('allStockSection');
-    });
+document.getElementById('allStockTab').addEventListener('click', function() {
+    activateTab('allStockSection');
+});
 
 // 탭 활성화 함수
 function activateTab(sectionId) {
@@ -374,57 +341,3 @@ function loadAllStock() {
 window.onload = function() {
     loadAllStock();  // Firebase에서 전체 재고를 불러와서 테이블 갱신
 };
-
-
-//----------- 섹션 4 날짜별 입출고 기록
-
-//1. 기록 보기 버튼 이벤트 추가
-document.getElementById('viewLogsButton').addEventListener('click', function() {
-    const logDate = document.getElementById('logDate').value;
-
-    if (logDate) {
-        loadDailyLogs(logDate); // 날짜별 기록 불러오기
-    } else {
-        alert('날짜를 선택해주세요.');
-    }
-});
-
-//2. 날짜별 기록 데이터 로드 함수
-function loadDailyLogs(date) {
-    const logsRef = ref(db, `logs/${date}`); // 날짜별 Firebase 경로
-    onValue(logsRef, (snapshot) => {
-        const data = snapshot.val();
-        updateDailyLogsTable(date, data);
-    }, (error) => {
-        console.error('Firebase 기록 로딩 오류:', error);
-        alert('기록 데이터를 로드하는 중 오류가 발생했습니다.');
-    });
-}
-
-//3. 테이블 업데이트 함수
-function updateDailyLogsTable(date, logs) {
-    const tableBody = document.getElementById('dailyLogsTable').querySelector('tbody');
-    tableBody.innerHTML = ''; // 기존 데이터 초기화
-
-    if (!logs) {
-        const noDataRow = tableBody.insertRow();
-        const cell = noDataRow.insertCell(0);
-        cell.colSpan = 6;
-        cell.textContent = `${date}의 기록이 없습니다.`;
-        return;
-    }
-
-    // 로그 데이터 테이블에 추가
-    for (const product in logs) {
-        const productData = logs[product];
-        const row = tableBody.insertRow();
-        row.innerHTML = `
-            <td>${date}</td>
-            <td>${convertToKorean(product)}</td>
-            <td>${productData.stockAmount || 0}</td>
-            <td>${productData.neededAmount || 0}</td>
-            <td>${productData.incomingAmount || 0}</td>
-            <td>${productData.outgoingAmount || 0}</td>
-        `;
-    }
-}
