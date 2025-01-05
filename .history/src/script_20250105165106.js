@@ -202,73 +202,59 @@ function searchProducts(searchTerm) {
 
 //----------섹션 2 (재고 입력)------------
 
-document.getElementById('submitButton').addEventListener('click', function () {
-    const stockDate = document.getElementById('stockDate')?.value || ''; 
-    const product = document.getElementById('product')?.value || '';
-    const size = document.getElementById('size')?.value || '';
-    const type = document.getElementById('type')?.value || '';
-    const stockAmountValue = document.getElementById('stockAmount')?.value || '';
-    const neededAmountValue = document.getElementById('neededAmount')?.value || '';
-    const incomingAmountValue = document.getElementById('incomingAmount')?.value || ''; // 입고 수량
-    const outgoingAmountValue = document.getElementById('outgoingAmount')?.value || ''; // 출고 수량
+// 제출 버튼 클릭 시
+document.getElementById('submitButton').addEventListener('click', function() {
+    const stockDate = document.getElementById('stockDate').value;
+    const product = document.getElementById('product').value; 
+    const size = document.getElementById('size').value;       
+    const type = document.getElementById('type').value;     
+    const stockAmountValue = document.getElementById('stockAmount')?.value || '';  
+    const neededAmountValue = document.getElementById('neededAmount')?.value || '';  
 
-    const stockAmount = parseInt(stockAmountValue);
-    const neededAmount = parseInt(neededAmountValue);
-    const incomingAmount = parseInt(incomingAmountValue);
-    const outgoingAmount = parseInt(outgoingAmountValue);
-
-    console.log("Input values:", { stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount });
-
-    // 유효성 검사
-    if (!stockDate || !product || !size || !type || isNaN(stockAmount) || isNaN(neededAmount) || isNaN(incomingAmount) || isNaN(outgoingAmount)) {
-        alert('모든 필드를 올바르게 입력해주세요.');
+    // 숫자 변환 및 기본값 설정
+    const stockAmount = parseInt(stockAmountValue) || 0;
+    const neededAmount = parseInt(neededAmountValue) || 0;
+    
+    if (!stockDate) {
+        alert('날짜를 입력해주세요.');
         return;
     }
 
+    if (product && size && type && !isNaN(stockAmount) && !isNaN(neededAmount)){ 
+        alert('모든 필드를 입력해주세요.');
+        return;
+    }
+
+    
     // 데이터 저장 호출
-    saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
+     saveStockData(stockDate, product, size, type, stockAmount, neededAmount);
 });
 
 
-
-
 // Firebase에 재고 데이터 저장
-
-function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
-    if (
-        !stockDate ||
-        !product ||
-        !size ||
-        !type ||
-        stockAmount === undefined ||
-        neededAmount === undefined ||
-        incomingAmount === undefined ||
-        outgoingAmount === undefined
-    ) {
-        console.error('저장할 데이터에 undefined 값이 포함되어 있습니다.');
-        alert('저장할 수 없습니다. 입력값을 확인해주세요.');
+function saveStockData(stockDate,product, size, type, stockAmount, neededAmount) {
+    if (!stockDate || !product || !size || !type) {
+        console.error('잘못된 데이터가 포함되어 저장을 중단합니다.');
+        alert('데이터 저장에 실패했습니다. 입력값을 확인하세요.');
         return;
     }
-
-    // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
+   
     const productRef = ref(db, `stocks/${stockDate}/${product}/${size}/${type}`);
 
     set(productRef, {
-        stockAmount: stockAmount,
-        neededAmount: neededAmount,
-        incomingAmount: incomingAmount,
-        outgoingAmount: outgoingAmount,
+        stockAmount: stockAmount,  
+        neededAmount: neededAmount  
     })
-        .then(() => {
-            alert('재고 정보가 저장되었습니다.');
-            document.getElementById('stockForm').reset(); // 폼 초기화
-        })
-        .catch((error) => {
-            console.error('데이터 저장 실패:', error);
-            alert('재고 정보를 저장하는데 실패했습니다.');
-        });
-}
 
+    .then(() => {
+        alert('재고 정보가 저장되었습니다.');
+        document.getElementById('stockForm').reset();  // 폼 초기화
+    })
+    .catch((error) => {
+        console.error('데이터 저장 실패:', error);
+        alert('재고 정보를 저장하는데 실패했습니다.');
+    });
+}
 
     // 테이블 셀 클릭 시 수정 가능하게 만들기
 document.addEventListener('DOMContentLoaded', function() {
