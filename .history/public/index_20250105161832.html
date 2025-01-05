@@ -12,6 +12,7 @@
         <div class="tab-container">
             <button class="tab-button active" id="searchTab">재고 검색</button>
             <button class="tab-button" id="movementTab">입고/출고</button>
+            <button class="tab-button" id="movementTab">입고/출고</button>
             <button class="tab-button" id="allStockTab">전체 재고</button>
         </div>
 
@@ -35,7 +36,25 @@
                 </tbody>
             </table>
         </section>
-       
+        <section id="searchSection" class="section active">
+            <h2>재고 검색</h2>
+            <input type="text" id="searchInput" placeholder="검색할 방석 종류 입력">
+            <button id="searchBtn">검색</button>
+            <table id="searchResults">
+                <thead>
+                    <tr>
+                        <th>제품</th>
+                        <th>사이즈</th>
+                        <th>재고 종류</th>
+                        <th>현재 재고</th>
+                        <th>생산 필요량</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 검색 결과 테이블 -->
+                </tbody>
+            </table>
+        </section>
 
         <!-- 섹션 2: 입고/출고 처리 -->
         <section id="movementSection" class="section">
