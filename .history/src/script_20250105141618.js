@@ -1,9 +1,8 @@
-//---------탭 관련 시작 ---------
+import './script.js';  // /script.js를 Webpack에 포함시켜 번들링
+import './styles.css';
 
-// 탭 전환 기능
-document.getElementById('searchTab').addEventListener('click', function() {
-    activateTab('searchSection');
-});
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
 
 document.getElementById('inputTab').addEventListener('click', function() {
     activateTab('inputSection');
@@ -134,38 +133,85 @@ function searchProducts(searchTerm) {
             }
         }
 
-            updateSearchTable(filteredProducts);
+        // 테이블에 검색 결과 표시
+        updateSearchTable(filteredProducts);
+    });
+
+    document.getElementById('movementTab').addEventListener('click', function() {
+        activateTab('movementSection');
+    });
+
+    document.getElementById('allStockTab').addEventListener('click', function() {
+        activateTab('allStockSection');
+    });
+
+    function activateTab(sectionId) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => {
+            section.classList.remove('active');
         });
+
+        const tabs = document.querySelectorAll('.tab-button');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        document.getElementById(sectionId).classList.add('active');
+        const activeTab = document.getElementById(sectionId.replace('Section', 'Tab'));
+        activeTab.classList.add('active');
     }
 
-    function updateSearchTable(products) {
-        const tableBody = document.getElementById('searchResults').querySelector('tbody');
-        tableBody.innerHTML = '';
+    // 입고/출고 처리 함수
+    function updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount) {
+        const productRef = ref(db, 'stocks/' + stockDate + '/' + product + '/' + size + '/' + type);
 
-        if (products.length === 0) {
-            const noResultsRow = tableBody.insertRow();
-            const cell = noResultsRow.insertCell(0);
-            cell.colSpan = 5;
-            cell.textContent = "검색 결과가 없습니다.";
-            return;
-        }
+        onValue(productRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const currentStock = data.currentStock;  // 기존 재고
+                const incoming = data.incoming || 0;  // 기존 입고
+                const outgoing = data.outgoing || 0;  // 기존 출고
+                const neededAmount = data.neededAmount;  // 생산 필요량
 
-        products.forEach(product => {
-            for (const size in product) {
-                for (const type in product[size]) {
-                    const stockItem = product[size][type];
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `
-                        <td></td>
-                        <td>${convertToKorean(size)}</td>
-                        <td>${convertToKorean(type)}</td>
-                        <td>${stockItem.stockAmount}</td>
-                        <td>${stockItem.neededAmount}</td>
-                    `;
-                }
+                const newIncoming = incoming + incomingAmount;  // 입고 수량 갱신
+                const newOutgoing = outgoing + outgoingAmount;  // 출고 수량 갱신
+                const remainingStock = currentStock + newIncoming - newOutgoing;  // 남은 재고 계산
+
+                set(productRef, {
+                    currentStock: currentStock,  // 기존 재고
+                    incoming: newIncoming,  // 입고 수량
+                    outgoing: newOutgoing,  // 출고 수량
+                    remainingStock: remainingStock,  // 남은 재고
+                    neededAmount: neededAmount  // 생산 필요량
+                })
+                .then(() => {
+                    alert('재고 정보가 갱신되었습니다.');
+                })
+                .catch((error) => {
+                    console.error('재고 정보 갱신 실패:', error);
+                    alert('재고 정보 갱신에 실패했습니다.');
+                });
+            } else {
+                console.log('해당 제품에 대한 재고 정보가 없습니다.');
             }
         });
     }
+
+    // 입고/출고 처리 버튼 클릭
+    document.getElementById('submitMovementButton').addEventListener('click', function() {
+        const stockDate = document.getElementById('stockDate').value;
+        const product = document.getElementById('product').value;
+        const size = document.getElementById('size').value;
+        const type = document.getElementById('type').value;
+        const incomingAmount = parseInt(document.getElementById('incomingAmount').value);
+        const outgoingAmount = parseInt(document.getElementById('outgoingAmount').value);
+
+        if (stockDate && product && size && type && !isNaN(incomingAmount) && !isNaN(outgoingAmount)) {
+            updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount);
+        } else {
+            alert('모든 필드를 입력해주세요.');
+        }
+    });
 
 //----------섹션 2 (재고 입력)------------
 
@@ -198,8 +244,8 @@ function saveStockData(product, size, type, stockAmount, neededAmount) {
     .catch((error) => {
         console.error('데이터 저장 실패:', error);
         alert('재고 정보를 저장하는데 실패했습니다.');
-    });
-}
+    })
+};
 
     // 테이블 셀 클릭 시 수정 가능하게 만들기
 document.addEventListener('DOMContentLoaded', function() {
@@ -324,9 +370,12 @@ function loadAllStock() {
         }
         const allProducts = [];
 
-        // 전체 제품 정보 불러오기
-        for (const product in data) {
-            allProducts.push({[product]: data[product]});
+        if (products.length === 0) {
+            const noResultsRow = tableBody.insertRow();
+            const cell = noResultsRow.insertCell(0);
+            cell.colSpan = 5;
+            cell.textContent = "검색 결과가 없습니다.";
+            return;
         }
 
         // 전체 재고 테이블 업데이트
@@ -339,5 +388,7 @@ function loadAllStock() {
 
 // 페이지가 로드될 때 전체 재고를 불러옴
 window.onload = function() {
-    loadAllStock();  // Firebase에서 전체 재고를 불러와서 테이블 갱신
+    loadAllStock();  // Firebase에서 전체 재고를 불러와서 테이블 갱신   
+        }
 };
+

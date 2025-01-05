@@ -35,6 +35,7 @@ function activateTab(sectionId) {
     activeTab.classList.add('active');
 }
 //----------------탭 관련 끝 ---------
+
 //영어->한글로 번역해서 출력
 
 const convertToKorean = (name) => {
@@ -96,23 +97,25 @@ const convertToKorean = (name) => {
 
 
 //---------- 섹션 1 (제품검색) ----------
-// Firebase 설정 및 초기화
 import { initializeApp } from "firebase/app";
-import { getDatabase, set, ref, query, onValue, remove } from "firebase/database";
+import { getDatabase, ref, set,query, orderByKey, startAt, endAt, onValue } from "firebase/database";
+
+// Firebase 설정
 const firebaseConfig = {
     apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
     authDomain: "nameage-ec0a2.firebaseapp.com",
-    databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "nameage-ec0a2",
+   databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+   projectId: "nameage-ec0a2",
     storageBucket: "nameage-ec0a2.firebasestorage.app",
-    messagingSenderId: "72793368901",
-    appId: "1:72793368901:web:55e93af625bf0c9193362c"
+   messagingSenderId: "72793368901",
+   appId: "1:72793368901:web:55e93af625bf0c9193362c"
 };
 
+// Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 제품 검색 기능
+// 검색 버튼 클릭 시
 document.getElementById('searchBtn').addEventListener('click', function() {
     const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
     if (searchTerm) {
@@ -120,7 +123,9 @@ document.getElementById('searchBtn').addEventListener('click', function() {
     }
 });
 
+// 제품 검색 기능
 function searchProducts(searchTerm) {
+    // Firebase에서 검색어에 맞는 데이터를 가져오기 위한 쿼리 작성
     const productsRef = ref(db, 'stocks');
     const productQuery = query(productsRef);
 
@@ -128,68 +133,74 @@ function searchProducts(searchTerm) {
         const data = snapshot.val();
         const filteredProducts = [];
 
+        // 데이터 필터링: 검색어가 포함된 제품 찾기
         for (const product in data) {
-            if (product.toLowerCase().includes(searchTerm)) { 
+            if (product.toLowerCase().includes(searchTerm)) {  // 대소문자 구분 없이 검색
                 filteredProducts.push(data[product]);
             }
         }
 
-            updateSearchTable(filteredProducts);
-        });
+        // 테이블에 검색 결과 표시
+        updateSearchTable(filteredProducts);
+    });
+}
+
+// 검색 결과 테이블 업데이트
+function updateSearchTable(products) {
+    const tableBody = document.getElementById('searchResults').querySelector('tbody');
+    tableBody.innerHTML = ''; // 기존 결과 삭제
+
+    if (products.length === 0) {
+        const noResultsRow = tableBody.insertRow();
+        const cell = noResultsRow.insertCell(0);
+        cell.colSpan = 5;
+        cell.textContent = "검색 결과가 없습니다.";
+        return;
     }
 
-    function updateSearchTable(products) {
-        const tableBody = document.getElementById('searchResults').querySelector('tbody');
-        tableBody.innerHTML = '';
-
-        if (products.length === 0) {
-            const noResultsRow = tableBody.insertRow();
-            const cell = noResultsRow.insertCell(0);
-            cell.colSpan = 5;
-            cell.textContent = "검색 결과가 없습니다.";
-            return;
-        }
-
-        products.forEach(product => {
-            for (const size in product) {
-                for (const type in product[size]) {
-                    const stockItem = product[size][type];
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `
-                        <td></td>
-                        <td>${convertToKorean(size)}</td>
-                        <td>${convertToKorean(type)}</td>
-                        <td>${stockItem.stockAmount}</td>
-                        <td>${stockItem.neededAmount}</td>
-                    `;
-                }
+    // 검색된 제품 목록을 테이블에 추가
+    products.forEach(product => {
+        for (const size in product) {
+            for (const type in product[size]) {
+                const stockItem = product[size][type];
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td></td>
+                    <td>${convertToKorean(size)}</td>
+                    <td>${convertToKorean(type)}</td>
+                    <td>${stockItem.stockAmount}</td>
+                    <td>${stockItem.neededAmount}</td>
+                `;
             }
-        });
-    }
+        }
+    });
+}
 
 //----------섹션 2 (재고 입력)------------
 
 // 제출 버튼 클릭 시
 document.getElementById('submitButton').addEventListener('click', function() {
-    const product = document.getElementById('product').value; 
-    const size = document.getElementById('size').value;       
-    const type = document.getElementById('type').value;     
-    const stockAmount = parseInt(document.getElementById('stockAmount').value);  
-    const neededAmount = parseInt(document.getElementById('neededAmount').value);  
+    const product = document.getElementById('product').value;  // 방석 종류
+    const size = document.getElementById('size').value;        // 사이즈
+    const type = document.getElementById('type').value;        // 재고 종류
+    const stockAmount = parseInt(document.getElementById('stockAmount').value);  // 현재 재고
+    const neededAmount = parseInt(document.getElementById('neededAmount').value);  // 생산 필요량
 
     if (product && size && type && !isNaN(stockAmount) && !isNaN(neededAmount)) {
+        // Firebase에 데이터 저장
         saveStockData(product, size, type, stockAmount, neededAmount);
     } else {
         alert('모든 필드를 입력해주세요.');
     }
 });
 
-// Firebase에 재고 데이터 저장
+// Firebase에 재고 데이터 저장 함수
 function saveStockData(product, size, type, stockAmount, neededAmount) {
-    const productRef = ref(db, 'stocks/' + product + '/' + size + '/' + type); 
-     set(productRef, {
-        stockAmount: stockAmount,  
-        neededAmount: neededAmount  
+    // Firebase 데이터 경로
+    const productRef = ref(db, 'stocks/' + product + '/' + size + '/' + type);  // product는 제품 종류
+    set(productRef, {
+        stockAmount: stockAmount,  // 현재 재고
+        neededAmount: neededAmount  // 생산 필요량
     })
     .then(() => {
         alert('재고 정보가 저장되었습니다.');
@@ -201,115 +212,100 @@ function saveStockData(product, size, type, stockAmount, neededAmount) {
     });
 }
 
-    // 테이블 셀 클릭 시 수정 가능하게 만들기
-document.addEventListener('DOMContentLoaded', function() {
-    const table = document.getElementById('allStockTable');
- 
-     table.addEventListener('click', function(event) {
-        const cell = event.target;
-        
-        if (cell.classList.contains('editable')) {
-            const currentValue = cell.textContent;
-            const fieldName = cell.dataset.field;  
+ // 테이블 셀 클릭 시 수정 가능하게 만들기
+document.querySelectorAll('#allStockTable .editable').forEach(cell => {
+    cell.addEventListener('click', function() {
+        const currentValue = cell.textContent;
+        const fieldName = cell.dataset.field;  // "product", "size", "type", "stockAmount", "neededAmount"
 
-            // 입력 필드로 바꾸기
-            const inputField = document.createElement('input');
-            inputField.value = currentValue;
-            cell.textContent = '';
-            cell.appendChild(inputField);
+        // 입력 필드로 바꾸기
+        const inputField = document.createElement('input');
+        inputField.value = currentValue;
+        cell.textContent = '';
+        cell.appendChild(inputField);
 
-            inputField.addEventListener('blur', function() {
-                const newValue = inputField.value;
-                cell.textContent = newValue;
+        inputField.addEventListener('blur', function() {
+            const newValue = inputField.value;
+            cell.textContent = newValue;
 
-                // Firebase에서 데이터 업데이트 (기존 데이터 덮어쓰기)
-                const row = cell.closest('tr');
-                const product = row.querySelector('[data-field="product"]').textContent;
-                const size = row.querySelector('[data-field="size"]').textContent;
-                const type = row.querySelector('[data-field="type"]').textContent;
-                const db = getDatabase();
-                const productRef = ref(db, `stocks/${product}/${size}/${type}`);
-                
-               
-                 const currentData = {
-                    stockAmount: row.querySelector('[data-field="stockAmount"]').textContent,
-                    neededAmount: row.querySelector('[data-field="neededAmount"]').textContent
-                };
+            // Firebase에서 해당 데이터 업데이트
+            const row = cell.closest('tr');
+            const product = row.querySelector('[data-field="product"]').textContent;
+            const size = row.querySelector('[data-field="size"]').textContent;
+            const type = row.querySelector('[data-field="type"]').textContent;
 
-               
-                set(productRef, {
-                    ...currentData,  
-                    [fieldName]: newValue
-                }).then(() => {
-                    console.log(`Updated ${fieldName} to ${newValue}`);
-                }).catch((error) => {
-                    console.error("Update failed:", error);
-                });
+            const productRef = ref(db, `stocks/${product}/${size}/${type}`);
+
+            update(productRef, {
+                [fieldName]: newValue
+            }).then(() => {
+                console.log(`Updated ${fieldName} to ${newValue}`);
+            }).catch((error) => {
+                console.error("Update failed:", error);
             });
-        }
+        });
     });
+});
 
-// 삭제 버튼 클릭 시 데이터 Firebase에서 제거 
-table.addEventListener('click', function(event) {
-    const button = event.target;
-    
-    if (button.classList.contains('delete-btn')) {
+//삭제 버튼 클릭시 데이터 Firebase에서 제거 
+
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function() {
         const row = button.closest('tr');
         const product = row.querySelector('[data-field="product"]').textContent;
         const size = row.querySelector('[data-field="size"]').textContent;
         const type = row.querySelector('[data-field="type"]').textContent;
-        row.remove(); 
-        const db = getDatabase();
+
         const productRef = ref(db, `stocks/${product}/${size}/${type}`);
         
         // Firebase에서 데이터 삭제
         remove(productRef).then(() => {
             console.log(`Deleted data for ${product} ${size} ${type}`);
-            row.remove(); 
         }).catch((error) => {
             console.error("Delete failed:", error);
         });
-
-    }
     });
 });
 
 
+//---------- 섹션 3 (전체 재고) ----------
+
 // 전체 재고 테이블 업데이트
 function updateAllStockTable(products) {
     const tableBody = document.getElementById('allStockTable').querySelector('tbody');
-    tableBody.innerHTML = ''; 
+    tableBody.innerHTML = ''; // 기존 결과 삭제
 
     if (products.length === 0) {
         const noResultsRow = tableBody.insertRow();
         const cell = noResultsRow.insertCell(0);
-        cell.colSpan = 7;
+        cell.colSpan = 5;
         cell.textContent = "전체 재고가 없습니다.";
         return;
     }
 
+    // 전체 재고 목록을 테이블에 추가
     products.forEach((product) => {        
         const productName = Object.keys(product)[0];
-        const productNameKorean = convertToKorean(productName); 
+        const productNameKorean = convertToKorean(productName);  // 제품명 한글로 변환
         for (const size in product[productName]) {
-          
+            if (product[productName].hasOwnProperty(size)) {
+                // size의 각 타입별로 순회 
                 for (const type in product[productName][size]) {
                     if (product[productName][size].hasOwnProperty(type)) {
                         const stockItem = product[productName][size][type];
                         const row = tableBody.insertRow();
                         row.innerHTML = `
-                            <td class="editable" data-field="product">${productNameKorean}</td>
-                            <td class="editable" data-field="size">${convertToKorean(size)}</td>
-                            <td class="editable" data-field="type">${convertToKorean(type)}</td>
-                            <td class="editable" data-field="stockAmount">${stockItem.stockAmount}</td>
-                            <td class="editable" data-field="neededAmount">${stockItem.neededAmount}</td>
-                            <td><button class="edit-btn">수정</button></td>
-                            <td><button class="delete-btn">삭제</button></td>
-                `;               
+                            <td>${productNameKorean}</td>
+                            <td>${convertToKorean(size)}</td>
+                            <td>${convertToKorean(type)}</td>
+                            <td>${stockItem.stockAmount}</td>
+                            <td>${stockItem.neededAmount}</td>
+                `;
                 }
             }
         }
-    });
+    }
+});
 }
 
 // Firebase에서 전체 재고 정보 불러오기
@@ -317,11 +313,6 @@ function loadAllStock() {
     const productsRef = ref(db, 'stocks'); // Firebase에서 재고 정보 가져오기
     onValue(productsRef, (snapshot) => {
         const data = snapshot.val();
-         
-        if (data === null) {
-            console.log("Firebase에서 데이터를 불러오지 못했습니다.");
-            return;
-        }
         const allProducts = [];
 
         // 전체 제품 정보 불러오기
@@ -329,15 +320,12 @@ function loadAllStock() {
             allProducts.push({[product]: data[product]});
         }
 
-        // 전체 재고 테이블 업데이트
+        // 테이블에 전체 재고 표시
         updateAllStockTable(allProducts);
-    
-    }, (error) => {
-        console.error("Firebase 데이터 로딩 오류:", error);
     });
 }
 
 // 페이지가 로드될 때 전체 재고를 불러옴
 window.onload = function() {
-    loadAllStock();  // Firebase에서 전체 재고를 불러와서 테이블 갱신
+    loadAllStock();
 };

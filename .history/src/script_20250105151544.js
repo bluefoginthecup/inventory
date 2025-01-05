@@ -102,13 +102,14 @@ import { getDatabase, set, ref, query, onValue, remove } from "firebase/database
 const firebaseConfig = {
     apiKey: "AIzaSyCviaYW79vbuEzyLGlVP5OK8irS_yVHmxk",
     authDomain: "nameage-ec0a2.firebaseapp.com",
-    databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "nameage-ec0a2",
+   databaseURL: "https://nameage-ec0a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+   projectId: "nameage-ec0a2",
     storageBucket: "nameage-ec0a2.firebasestorage.app",
-    messagingSenderId: "72793368901",
-    appId: "1:72793368901:web:55e93af625bf0c9193362c"
+   messagingSenderId: "72793368901",
+   appId: "1:72793368901:web:55e93af625bf0c9193362c"
 };
 
+// Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -134,38 +135,41 @@ function searchProducts(searchTerm) {
             }
         }
 
-            updateSearchTable(filteredProducts);
-        });
+        // 테이블에 검색 결과 표시
+        updateSearchTable(filteredProducts);
+    });
+}
+
+// 검색 결과 테이블 업데이트
+function updateSearchTable(products) {
+    const tableBody = document.getElementById('searchResults').querySelector('tbody');
+    tableBody.innerHTML = ''; // 기존 결과 삭제
+
+    if (products.length === 0) {
+        const noResultsRow = tableBody.insertRow();
+        const cell = noResultsRow.insertCell(0);
+        cell.colSpan = 5;
+        cell.textContent = "검색 결과가 없습니다.";
+        return;
     }
 
-    function updateSearchTable(products) {
-        const tableBody = document.getElementById('searchResults').querySelector('tbody');
-        tableBody.innerHTML = '';
-
-        if (products.length === 0) {
-            const noResultsRow = tableBody.insertRow();
-            const cell = noResultsRow.insertCell(0);
-            cell.colSpan = 5;
-            cell.textContent = "검색 결과가 없습니다.";
-            return;
-        }
-
-        products.forEach(product => {
-            for (const size in product) {
-                for (const type in product[size]) {
-                    const stockItem = product[size][type];
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `
-                        <td></td>
-                        <td>${convertToKorean(size)}</td>
-                        <td>${convertToKorean(type)}</td>
-                        <td>${stockItem.stockAmount}</td>
-                        <td>${stockItem.neededAmount}</td>
-                    `;
-                }
+    // 검색된 제품 목록을 테이블에 추가
+    products.forEach(product => {
+        for (const size in product) {
+            for (const type in product[size]) {
+                const stockItem = product[size][type];
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td></td>
+                    <td>${convertToKorean(size)}</td>
+                    <td>${convertToKorean(type)}</td>
+                    <td>${stockItem.stockAmount}</td>
+                    <td>${stockItem.neededAmount}</td>
+                `;
             }
-        });
-    }
+        }
+    });
+}
 
 //----------섹션 2 (재고 입력)------------
 
