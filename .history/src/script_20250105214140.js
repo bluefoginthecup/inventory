@@ -7,8 +7,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
     const stockDateInput = document.getElementById('stockDate');
-   
-//입출고날짜 오늘 날짜로 디폴트 입력
+    const searchResultsTable = document.getElementById('searchResults');
+
+
+    // 테이블에 이벤트 추가
+    searchResultsTable.addEventListener('click', function (event) {
+        const target = event.target;
+
+        // 수정 버튼 클릭 처리
+        if (target.classList.contains('edit-btn')) {
+            const row = target.closest('tr');
+            const cells = row.querySelectorAll('[data-editable="true"]');
+            const updatedData = {};
+
+            cells.forEach(cell => {
+                const field = cell.dataset.field;
+                const input = cell.querySelector('input');
+                if (input) {
+                    updatedData[field] = input.value.trim();
+                    cell.textContent = input.value.trim(); // 입력값 저장 후 셀 내용 복원
+                }
+            });
+
+            // Firebase에 데이터 업데이트
+            updateFirebaseRow(row, updatedData);
+        }
+
+        // 셀 클릭 시 입력 필드로 변경
+        if (target.dataset.editable === "true") {
+            const cell = target;
+            const currentValue = cell.textContent.trim();
+            const input = document.createElement('input');
+            input.value = currentValue;
+            cell.textContent = '';
+            cell.appendChild(input);
+            input.focus();
+        }
+    });
+});
+
+// Firebase 데이터 업데이트 함수
+function updateFirebaseRow(row, updatedData) {
+    const date = row.querySelector('[data-field="date"]').textContent.trim();
+    const product = row.querySelector('[data-field="product"]').textContent.trim();
+    const size = row.querySelector('[data-field="size"]').textContent.trim();
+    const type = row.querySelector('[data-field="type"]').textContent.trim();
+
+    const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
+
+    // Firebase 데이터 업데이트
+    set(dbRef, updatedData)
+        .then(() => console.log('Row updated successfully:', updatedData))
+        .catch(error => console.error('Failed to update Firebase:', error));
+}
+
+//입출고날짜 오늘 날짜로 디폴트 입력력
 
     if (stockDateInput) {
         const today = new Date();
@@ -18,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         stockDateInput.value = `${year}-${month}-${day}`;
     };
 
-   //탭 버튼 클릭시 탭 활성화
+   //탭 버튼 클릭시 탭 활성화화 
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -44,77 +97,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
             console.error('allStockTab 요소를 찾을 수 없습니다.');
         }
+    
+    
+    
 
-        
-});
-        document.addEventListener('DOMContentLoaded', function() {    
-        const searchResultsTable = document.getElementById('searchResults');
-
-
-        // 테이블에 이벤트 추가
-        searchResultsTable.addEventListener('click', function (event) {
-            const target = event.target;
-
-            // 수정 버튼 클릭 처리
-            if (target.classList.contains('edit-btn')) {
-                const row = target.closest('tr');
-                const cells = row.querySelectorAll('[data-editable="true"]');
-                const updatedData = {};
-
-                cells.forEach(cell => {
-                    const field = cell.dataset.field;
-                    const input = cell.querySelector('input');
-                    if (input) {
-                        updatedData[field] = input.value.trim();
-                        cell.textContent = input.value.trim(); // 입력값 저장 후 셀 내용 복원
-                    }
-                });
-
-                // Firebase에 데이터 업데이트
-                updateFirebaseRow(row, updatedData);
-            }
-
-            // 셀 클릭 시 입력 필드로 변경
-            if (target.dataset.editable === "true") {
-                const cell = target;
-                const currentValue = cell.textContent.trim();
-                const input = document.createElement('input');
-                input.value = currentValue;
-                cell.textContent = '';
-                cell.appendChild(input);
-                input.focus();
-            }
-        });
-        });
-
-        function updateFirebaseRow(row, updatedData) {
-            console.log('Attempting to update row with data:', updatedData);
-        
-            const dateCell = row.querySelector('[data-field="date"]');
-            const productCell = row.querySelector('[data-field="product"]');
-            const sizeCell = row.querySelector('[data-field="size"]');
-            const typeCell = row.querySelector('[data-field="type"]');
-        
-            if (!dateCell || !productCell || !sizeCell || !typeCell) {
-                console.error('Invalid row data: Missing required fields.');
-                return;
-            }
-        
-            const date = dateCell.textContent.trim();
-            const product = productCell.textContent.trim();
-            const size = sizeCell.textContent.trim();
-            const type = typeCell.textContent.trim();
-        
-            console.log('Firebase path:', `stocks/${date}/${product}/${size}/${type}`);
-        
-            const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
-        
-            // Firebase 데이터 업데이트
-            set(dbRef, updatedData)
-                .then(() => console.log('Row updated successfully:', updatedData))
-                .catch(error => console.error('Failed to update Firebase:', error));
-        }
-        
 
 
     document.getElementById('searchTab').addEventListener('click', function() {
@@ -343,59 +329,17 @@ function updateSearchTable(results) {
                     <td>${convertToKorean(product)}</td>
                     <td>${convertToKorean(size)}</td>
                     <td>${convertToKorean(type)}</td>
-                    <td data-field="stockAmount">${stockItem.stockAmount || 0}</td>
-                    <td data-field="incomingAmount">${stockItem.incomingAmount || 0}</td>
-                    <td data-field="outgoingAmount">${stockItem.outgoingAmount || 0}</td>
-                    <td>${remainingStock}</td> <!-- 남은 재고 -->
-                    <td data-field="neededAmount">${stockItem.neededAmount || 0}</td>
-                    <td><button class="edit-btn">수정</button></td>
+                    <td>${stockItem.stockAmount || 0}</td>
+                    <td>${stockItem.incomingAmount || 0}</td>
+                    <td>${stockItem.outgoingAmount || 0}</td>
+                    <td>${remainingStock}</td> <!-- 남은 재고 추가 -->
+                    <td>${stockItem.neededAmount || 0}</td>
                 `;
-                
-                 // "수정" 버튼에 이벤트 핸들러 추가
-                 const editButton = row.querySelector('.edit-btn');
-                 editButton.addEventListener('click', () => {
-                     enableRowEditing(row, date, product, size, type);
-                 });
             }
         }
     });
 }
 
-//수정 버튼 눌렀을 때 특정 행을 편집 가능한 상태로 전환환
-function enableRowEditing(row, date, product, size, type) {
-    const cells = row.querySelectorAll('td');
-    const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
-    const editableFields = ['stockAmount', 'incomingAmount', 'outgoingAmount', 'neededAmount'];
-
-    cells.forEach((cell, index) => {
-        if (editableFields.includes(cell.dataset.field)) {
-            const inputField = document.createElement('input');
-            inputField.value = cell.textContent.trim();
-            cell.innerHTML = '';
-            cell.appendChild(inputField);
-        }
-    });
-
-    
-    // 저장 버튼 추가
-    const saveButton = document.createElement('button');
-    saveButton.textContent = '저장';
-    row.appendChild(saveButton);
-
-    saveButton.addEventListener('click', () => {
-        const updatedData = {};
-        editableFields.forEach((field, index) => {
-            updatedData[field] = parseInt(cells[index].querySelector('input').value, 10) || 0;
-        });
-
-        set(dbRef, updatedData)
-            .then(() => {
-                alert('수정이 완료되었습니다.');
-                loadSearchResults(); // 수정 후 테이블 다시 로드
-            })
-            .catch((error) => console.error('데이터 저장 실패:', error));
-    });
-}
 
     
 

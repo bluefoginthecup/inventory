@@ -87,34 +87,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         });
 
+        // Firebase 데이터 업데이트 함수
         function updateFirebaseRow(row, updatedData) {
-            console.log('Attempting to update row with data:', updatedData);
-        
-            const dateCell = row.querySelector('[data-field="date"]');
-            const productCell = row.querySelector('[data-field="product"]');
-            const sizeCell = row.querySelector('[data-field="size"]');
-            const typeCell = row.querySelector('[data-field="type"]');
-        
-            if (!dateCell || !productCell || !sizeCell || !typeCell) {
-                console.error('Invalid row data: Missing required fields.');
-                return;
-            }
-        
-            const date = dateCell.textContent.trim();
-            const product = productCell.textContent.trim();
-            const size = sizeCell.textContent.trim();
-            const type = typeCell.textContent.trim();
-        
-            console.log('Firebase path:', `stocks/${date}/${product}/${size}/${type}`);
-        
-            const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
-        
-            // Firebase 데이터 업데이트
-            set(dbRef, updatedData)
-                .then(() => console.log('Row updated successfully:', updatedData))
-                .catch(error => console.error('Failed to update Firebase:', error));
+        const date = row.querySelector('[data-field="date"]').textContent.trim();
+        const product = row.querySelector('[data-field="product"]').textContent.trim();
+        const size = row.querySelector('[data-field="size"]').textContent.trim();
+        const type = row.querySelector('[data-field="type"]').textContent.trim();
+
+        const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
+
+        // Firebase 데이터 업데이트
+        set(dbRef, updatedData)
+            .then(() => console.log('Row updated successfully:', updatedData))
+            .catch(error => console.error('Failed to update Firebase:', error));
         }
-        
 
 
     document.getElementById('searchTab').addEventListener('click', function() {
