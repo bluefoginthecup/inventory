@@ -2,19 +2,9 @@
 
 // dom으로 감싸기 + 탭 전환 기능
 document.addEventListener('DOMContentLoaded', function() {
-
     const searchTab = document.getElementById('searchTab');
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
-    const stockDateInput = document.getElementById('stockDate');
-    
-    if (stockDateInput) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        stockDateInput.value = `${year}-${month}-${day}`;
-    };
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -41,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('allStockTab 요소를 찾을 수 없습니다.');
         }
     });
-    
-    
-
 
 
     document.getElementById('searchTab').addEventListener('click', function() {
@@ -137,45 +124,7 @@ const convertToKorean = (name) => {
     return conversionMap[name] || name;
 };
 
-// 1. 한글 초성 추출 함수
-function extractInitials(str) {
-    const KOREAN_START = 0xAC00; // 가
-    const KOREAN_END = 0xD7A3;  // 힣
-    const INITIALS = [
-        "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"
-    ];
 
-    let result = "";
-
-    for (const char of str) {
-        const code = char.charCodeAt(0);
-
-        if (code >= KOREAN_START && code <= KOREAN_END) {
-            // 한글 초성 추출
-            const initialIndex = Math.floor((code - KOREAN_START) / 588);
-            result += INITIALS[initialIndex];
-        } else {
-            // 한글 외 문자 그대로 사용
-            result += char;
-        }
-    }
-    return result;
-}
-
-// 2. 검색 조건 매칭 함수
-function matchesSearchTerm(term, data) {
-    const lowerTerm = term.toLowerCase();
-    const lowerData = data.toLowerCase();
-
-    // 부분 문자열 매칭
-    if (lowerData.includes(lowerTerm)) {
-        return true;
-    }
-
-    // 초성 매칭
-    const initials = extractInitials(data);
-    return initials.includes(lowerTerm);
-}
 
 
 
@@ -202,83 +151,57 @@ const db = getDatabase(app);
 // 제품 검색 기능
 document.getElementById('searchBtn').addEventListener('click', function() {
     const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-    if (!searchTerm) {
-        alert('제품명을 입력해주세요.');
-        return;
-    }
+    if (searchTerm) {
         searchProducts(searchTerm);
-    });
+    }
+});
 
 function searchProducts(searchTerm) {
     const productsRef = ref(db, 'stocks');
+    const productQuery = query(productsRef);
 
-    onValue(productsRef, (snapshot) => {
+    onValue(productQuery, (snapshot) => {
         const data = snapshot.val();
-        if (!data) {
-            alert('Firebase에 데이터가 없습니다.');
-            updateSearchTable([]); // 검색 결과 없을 때 테이블 초기화
+        const filteredProducts = [];
+
+        for (const product in data) {
+            if (product.toLowerCase().includes(searchTerm)) { 
+                filteredProducts.push(data[product]);
+            }
+        }
+
+            updateSearchTable(filteredProducts);
+        });
+    }
+
+    function updateSearchTable(products) {
+        const tableBody = document.getElementById('searchResults').querySelector('tbody');
+        tableBody.innerHTML = '';
+
+        if (products.length === 0) {
+            const noResultsRow = tableBody.insertRow();
+            const cell = noResultsRow.insertCell(0);
+            cell.colSpan = 5;
+            cell.textContent = "검색 결과가 없습니다.";
             return;
         }
 
-        const results = [];
-        for (const date in data) {
-            const dailyData = data[date];
-            for (const product in dailyData) {
-                if (
-                    matchesSearchTerm(searchTerm, product) || // 제품명
-                    matchesSearchTerm(searchTerm, convertToKorean(product)) // 한글 변환된 이름
-                ) { 
-                const productData = dailyData[product];
-                results.push({ date, product, details: productData });
+        products.forEach(product => {
+            for (const size in product) {
+                for (const type in product[size]) {
+                    const stockItem = product[size][type];
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td></td>
+                        <td>${convertToKorean(size)}</td>
+                        <td>${convertToKorean(type)}</td>
+                        <td>${stockItem.stockAmount}</td>
+                        <td>${stockItem.neededAmount}</td>
+                    `;
+                }
             }
-        }
+        });
     }
-
-    if (results.length === 0) {
-        alert('검색 결과가 없습니다.');
-    }
-
-    updateSearchTable(results);
-});
-}
-
-// 검색 결과 테이블 업데이트 함수
-function updateSearchTable(results) {
-    const tableBody = document.getElementById('searchResults').querySelector('tbody');
-    tableBody.innerHTML = ''; // 기존 데이터 초기화
-
-    if (results.length === 0) {
-        const noResultsRow = tableBody.insertRow();
-        const cell = noResultsRow.insertCell(0);
-        cell.colSpan = 8; // 테이블의 열 개수
-        cell.textContent = "검색 결과가 없습니다.";
-        return;
-    }
-
-    results.forEach((result) => {
-        const { date, product, details } = result;
-
-        for (const size in details) {
-            for (const type in details[size]) {
-                const stockItem = details[size][type];
-                const row = tableBody.insertRow();
-                row.innerHTML = `
-                    <td>${date}</td>
-                    <td>${convertToKorean(product)}</td>
-                    <td>${convertToKorean(size)}</td>
-                    <td>${convertToKorean(type)}</td>
-                    <td>${stockItem.stockAmount || 0}</td>
-                    <td>${stockItem.incomingAmount || 0}</td>
-                    <td>${stockItem.outgoingAmount || 0}</td>
-                    <td>${stockItem.neededAmount || 0}</td>
-                `;
-            }
-        }
-    });
-}
-
-
-    
 
 //----------섹션 2 (재고 입력)------------
 

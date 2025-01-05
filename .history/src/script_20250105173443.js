@@ -2,19 +2,9 @@
 
 // dom으로 감싸기 + 탭 전환 기능
 document.addEventListener('DOMContentLoaded', function() {
-
     const searchTab = document.getElementById('searchTab');
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
-    const stockDateInput = document.getElementById('stockDate');
-    
-    if (stockDateInput) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        stockDateInput.value = `${year}-${month}-${day}`;
-    };
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -41,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('allStockTab 요소를 찾을 수 없습니다.');
         }
     });
-    
-    
-
 
 
     document.getElementById('searchTab').addEventListener('click', function() {
@@ -154,28 +141,22 @@ function extractInitials(str) {
             // 한글 초성 추출
             const initialIndex = Math.floor((code - KOREAN_START) / 588);
             result += INITIALS[initialIndex];
-        } else {
-            // 한글 외 문자 그대로 사용
-            result += char;
+        } else if (/[a-zA-Z0-9]/.test(char)) {
+            // 영어/숫자 그대로 추가
+            result += char.toLowerCase();
         }
     }
     return result;
 }
 
-// 2. 검색 조건 매칭 함수
-function matchesSearchTerm(term, data) {
-    const lowerTerm = term.toLowerCase();
-    const lowerData = data.toLowerCase();
+// 2. 검색어와 데이터 비교 (초성 포함)
+function matchesSearchTerm(searchTerm, dataTerm) {
+    const searchInitials = extractInitials(searchTerm);
+    const dataInitials = extractInitials(dataTerm);
 
-    // 부분 문자열 매칭
-    if (lowerData.includes(lowerTerm)) {
-        return true;
-    }
-
-    // 초성 매칭
-    const initials = extractInitials(data);
-    return initials.includes(lowerTerm);
+    return dataInitials.includes(searchInitials);
 }
+
 
 
 
@@ -224,10 +205,8 @@ function searchProducts(searchTerm) {
         for (const date in data) {
             const dailyData = data[date];
             for (const product in dailyData) {
-                if (
-                    matchesSearchTerm(searchTerm, product) || // 제품명
-                    matchesSearchTerm(searchTerm, convertToKorean(product)) // 한글 변환된 이름
-                ) { 
+                 // 초성 검색으로 변경
+                 if (matchesSearchTerm(searchTerm, product)) { 
                 const productData = dailyData[product];
                 results.push({ date, product, details: productData });
             }

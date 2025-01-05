@@ -2,19 +2,9 @@
 
 // dom으로 감싸기 + 탭 전환 기능
 document.addEventListener('DOMContentLoaded', function() {
-
     const searchTab = document.getElementById('searchTab');
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
-    const stockDateInput = document.getElementById('stockDate');
-    
-    if (stockDateInput) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        stockDateInput.value = `${year}-${month}-${day}`;
-    };
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -41,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('allStockTab 요소를 찾을 수 없습니다.');
         }
     });
-    
-    
-
 
 
     document.getElementById('searchTab').addEventListener('click', function() {
@@ -175,7 +162,6 @@ function matchesSearchTerm(term, data) {
     // 초성 매칭
     const initials = extractInitials(data);
     return initials.includes(lowerTerm);
-}
 
 
 
@@ -224,10 +210,8 @@ function searchProducts(searchTerm) {
         for (const date in data) {
             const dailyData = data[date];
             for (const product in dailyData) {
-                if (
-                    matchesSearchTerm(searchTerm, product) || // 제품명
-                    matchesSearchTerm(searchTerm, convertToKorean(product)) // 한글 변환된 이름
-                ) { 
+                 // 초성 검색으로 변경
+                 if (matchesSearchTerm(searchTerm, product)) { 
                 const productData = dailyData[product];
                 results.push({ date, product, details: productData });
             }

@@ -2,19 +2,9 @@
 
 // dom으로 감싸기 + 탭 전환 기능
 document.addEventListener('DOMContentLoaded', function() {
-
     const searchTab = document.getElementById('searchTab');
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
-    const stockDateInput = document.getElementById('stockDate');
-    
-    if (stockDateInput) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        stockDateInput.value = `${year}-${month}-${day}`;
-    };
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -41,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('allStockTab 요소를 찾을 수 없습니다.');
         }
     });
-    
-    
-
 
 
     document.getElementById('searchTab').addEventListener('click', function() {

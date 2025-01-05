@@ -7,14 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const movementTab = document.getElementById('movementTab'); // 올바른 ID
     const allStockTab = document.getElementById('allStockTab');
     const stockDateInput = document.getElementById('stockDate');
-    
-    if (stockDateInput) {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        stockDateInput.value = `${year}-${month}-${day}`;
-    };
 
     if (searchTab) {
         searchTab.addEventListener('click', function() {
@@ -42,7 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    
+    if (stockDateInput) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        stockDateInput.value = `${year}-${month}-${day}`;
+    };
 
 
 
