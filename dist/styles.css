@@ -27,7 +27,44 @@ h2 {
 }
 
 section {
+    display: none;
     margin-bottom: 40px;
+}
+
+.section.active {
+    display: block;
+}
+
+.tab-container {
+    display: flex;
+    justify-content: center; /* 가로로 가운데 정렬 */
+    align-items: center; /* 세로로 가운데 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
+    margin: 20px 0; /* 위아래 여백 */
+}
+
+
+.tab-button {
+    width: 150px; /* 버튼의 가로 길이 */
+    height: 50px; /* 버튼의 세로 길이 */
+    padding: 10px; /* 내부 여백 */
+    font-size: 16px; /* 글자 크기 */
+    text-align: center;
+    border-radius: 5px;
+    background-color: #007bff; /* 기본 배경색 */
+    color: white;
+    border: none;
+    margin: 5px; /* 버튼 간 간격 */
+    cursor: pointer;
+}
+
+
+.tab-button.active {
+    background-color: #0056b3; /* 활성화된 버튼 색상 */
+}
+
+.tab-button:hover {
+    background-color: #0056b3; /* 마우스를 올렸을 때 색상 */
 }
 
 form {

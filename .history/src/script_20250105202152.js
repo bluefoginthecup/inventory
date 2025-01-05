@@ -250,7 +250,7 @@ function updateSearchTable(results) {
     if (results.length === 0) {
         const noResultsRow = tableBody.insertRow();
         const cell = noResultsRow.insertCell(0);
-        cell.colSpan = 9; // 테이블의 열 개수
+        cell.colSpan = 8; // 테이블의 열 개수
         cell.textContent = "검색 결과가 없습니다.";
         return;
     }
@@ -261,11 +261,6 @@ function updateSearchTable(results) {
         for (const size in details) {
             for (const type in details[size]) {
                 const stockItem = details[size][type];
-                const remainingStock = 
-                    (stockItem.stockAmount || 0) +
-                    (stockItem.incomingAmount || 0) -
-                    (stockItem.outgoingAmount || 0); // 남은 재고 계산
-
                 const row = tableBody.insertRow();
                 row.innerHTML = `
                     <td>${date}</td>
@@ -275,7 +270,6 @@ function updateSearchTable(results) {
                     <td>${stockItem.stockAmount || 0}</td>
                     <td>${stockItem.incomingAmount || 0}</td>
                     <td>${stockItem.outgoingAmount || 0}</td>
-                    <td>${remainingStock}</td> <!-- 남은 재고 추가 -->
                     <td>${stockItem.neededAmount || 0}</td>
                 `;
             }
@@ -356,65 +350,81 @@ function saveStockData(stockDate, product, size, type, stockAmount, neededAmount
 }
 
 
-// Firebase에서 전체 재고 정보 불러오기
-function loadAllStock() {
-    const productsRef = ref(db, 'stocks'); // Firebase에서 재고 정보 가져오기
-    onValue(productsRef, (snapshot) => {
-        const data = snapshot.val();
-         
-        if (!data) {
-            console.log("Firebase에서 데이터를 불러오지 못했습니다.");
-            updateAllStockTable([]);
-            return;
+    // 테이블 셀 클릭 시 수정 가능하게 만들기
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('allStockTable');
+ 
+     table.addEventListener('click', function(event) {
+        const cell = event.target;
+        
+        if (cell.classList.contains('editable')) {
+            const currentValue = cell.textContent;
+            const fieldName = cell.dataset.field;  
+
+            // 입력 필드로 바꾸기
+            const inputField = document.createElement('input');
+            inputField.value = currentValue;
+            cell.textContent = '';
+            cell.appendChild(inputField);
+
+            inputField.addEventListener('blur', function() {
+                const newValue = inputField.value;
+                cell.textContent = newValue;
+
+                // Firebase에서 데이터 업데이트 (기존 데이터 덮어쓰기)
+                const row = cell.closest('tr');
+                const product = row.querySelector('[data-field="product"]').textContent;
+                const size = row.querySelector('[data-field="size"]').textContent;
+                const type = row.querySelector('[data-field="type"]').textContent;
+                const db = getDatabase();
+                const productRef = ref(db, `stocks/${product}/${size}/${type}`);
+                
+               
+                 const currentData = {
+                    stockAmount: row.querySelector('[data-field="stockAmount"]').textContent,
+                    neededAmount: row.querySelector('[data-field="neededAmount"]').textContent
+                };
+
+               
+                set(productRef, {
+                    ...currentData,  
+                    [fieldName]: newValue
+                }).then(() => {
+                    console.log(`Updated ${fieldName} to ${newValue}`);
+                }).catch((error) => {
+                    console.error("Update failed:", error);
+                });
+            });
         }
-
-        // 가장 최근 날짜의 데이터를 가져오기 위해 저장소 초기화
-        const latestData = {};
-
-        for (const date in data) {
-            const dailyData = data[date];
-            for (const product in dailyData) {
-                for (const size in dailyData[product]) {
-                    for (const type in dailyData[product][size]) {
-                        const stockItem = dailyData[product][size][type];
-                        const key = `${product}_${size}_${type}`;
-
-                        // 최신 날짜인지 확인
-                        if (
-                            !latestData[key] || 
-                            new Date(date) > new Date(latestData[key].date)
-                        ) {
-                            latestData[key] = {
-                                product,
-                                size,
-                                type,
-                                date,
-                                stockAmount: stockItem.stockAmount || 0,
-                                incomingAmount: stockItem.incomingAmount || 0,
-                                outgoingAmount: stockItem.outgoingAmount || 0,
-                                remainingStock:
-                                    (stockItem.stockAmount || 0) +
-                                    (stockItem.incomingAmount || 0) -
-                                    (stockItem.outgoingAmount || 0),
-                                neededAmount: stockItem.neededAmount || 0,
-                            };
-                        }
-                    }
-                }
-            }
-        }
-
-        // 배열 형태로 변환
-        const allProducts = Object.values(latestData);
-
-        // 전체 재고 테이블 업데이트
-        updateAllStockTable(allProducts);
-    }, (error) => {
-        console.error("Firebase 데이터 로딩 오류:", error);
     });
-}
 
-// 전체 재고 테이블 업데이트 함수
+// 삭제 버튼 클릭 시 데이터 Firebase에서 제거 
+table.addEventListener('click', function(event) {
+    const button = event.target;
+    
+    if (button.classList.contains('delete-btn')) {
+        const row = button.closest('tr');
+        const product = row.querySelector('[data-field="product"]').textContent;
+        const size = row.querySelector('[data-field="size"]').textContent;
+        const type = row.querySelector('[data-field="type"]').textContent;
+        row.remove(); 
+        const db = getDatabase();
+        const productRef = ref(db, `stocks/${product}/${size}/${type}`);
+        
+        // Firebase에서 데이터 삭제
+        remove(productRef).then(() => {
+            console.log(`Deleted data for ${product} ${size} ${type}`);
+            row.remove(); 
+        }).catch((error) => {
+            console.error("Delete failed:", error);
+        });
+
+    }
+    });
+});
+
+
+// 전체 재고 테이블 업데이트
 function updateAllStockTable(products) {
     const tableBody = document.getElementById('allStockTable').querySelector('tbody');
     tableBody.innerHTML = ''; 
@@ -427,16 +437,52 @@ function updateAllStockTable(products) {
         return;
     }
 
-    products.forEach((product) => {
-        const remainingStock = product.remainingStock || 0;        
-        const row = tableBody.insertRow();
-        row.innerHTML = `
-            <td>${convertToKorean(product.product)}</td>
-            <td>${convertToKorean(product.size)}</td>
-            <td>${convertToKorean(product.type)}</td>
-            <td>${remainingStock}</td> <!-- 계산된 남은 재고 표시 -->
-            <td>${product.neededAmount || 0}</td>
-        `;
+    products.forEach((product) => {        
+        const productName = Object.keys(product)[0];
+        const productNameKorean = convertToKorean(productName); 
+        for (const size in product[productName]) {
+          
+                for (const type in product[productName][size]) {
+                    if (product[productName][size].hasOwnProperty(type)) {
+                        const stockItem = product[productName][size][type];
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td class="editable" data-field="product">${productNameKorean}</td>
+                            <td class="editable" data-field="size">${convertToKorean(size)}</td>
+                            <td class="editable" data-field="type">${convertToKorean(type)}</td>
+                            <td class="editable" data-field="stockAmount">${stockItem.stockAmount}</td>
+                            <td class="editable" data-field="neededAmount">${stockItem.neededAmount}</td>
+                            <td><button class="edit-btn">수정</button></td>
+                            <td><button class="delete-btn">삭제</button></td>
+                `;               
+                }
+            }
+        }
+    });
+}
+
+// Firebase에서 전체 재고 정보 불러오기
+function loadAllStock() {
+    const productsRef = ref(db, 'stocks'); // Firebase에서 재고 정보 가져오기
+    onValue(productsRef, (snapshot) => {
+        const data = snapshot.val();
+         
+        if (data === null) {
+            console.log("Firebase에서 데이터를 불러오지 못했습니다.");
+            return;
+        }
+        const allProducts = [];
+
+        // 전체 제품 정보 불러오기
+        for (const product in data) {
+            allProducts.push({[product]: data[product]});
+        }
+
+        // 전체 재고 테이블 업데이트
+        updateAllStockTable(allProducts);
+    
+    }, (error) => {
+        console.error("Firebase 데이터 로딩 오류:", error);
     });
 }
 

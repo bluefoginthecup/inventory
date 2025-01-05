@@ -6303,12 +6303,188 @@ function getModularInstance(service) {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _script_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./script.js */ "./src/script.js");
-/* harmony import */ var _styles_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.css */ "./src/styles.css");
-/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
-/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
- // /script.js를 Webpack에 포함시켜 번들링
+/* harmony import */ var firebase_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/app */ "./node_modules/firebase/app/dist/esm/index.esm.js");
+/* harmony import */ var firebase_database__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! firebase/database */ "./node_modules/firebase/database/dist/esm/index.esm.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+//---------탭 관련 시작 ---------
 
+// dom으로 감싸기 + 탭 전환 기능
+document.addEventListener('DOMContentLoaded', function () {
+  var searchTab = document.getElementById('searchTab');
+  var movementTab = document.getElementById('movementTab'); // 올바른 ID
+  var allStockTab = document.getElementById('allStockTab');
+  var stockDateInput = document.getElementById('stockDate');
+  if (stockDateInput) {
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = String(today.getMonth() + 1).padStart(2, '0');
+    var day = String(today.getDate()).padStart(2, '0');
+    stockDateInput.value = "".concat(year, "-").concat(month, "-").concat(day);
+  }
+  ;
+  if (searchTab) {
+    searchTab.addEventListener('click', function () {
+      activateTab('searchSection');
+    });
+  } else {
+    console.error('searchTab 요소를 찾을 수 없습니다.');
+  }
+  if (movementTab) {
+    // inputTab -> movementTab
+    movementTab.addEventListener('click', function () {
+      activateTab('movementSection');
+    });
+  } else {
+    console.error('movementTab 요소를 찾을 수 없습니다.');
+  }
+  if (allStockTab) {
+    allStockTab.addEventListener('click', function () {
+      activateTab('allStockSection');
+    });
+  } else {
+    console.error('allStockTab 요소를 찾을 수 없습니다.');
+  }
+});
+document.getElementById('searchTab').addEventListener('click', function () {
+  activateTab('searchSection');
+});
+document.getElementById('movementTab').addEventListener('click', function () {
+  activateTab('movementSection'); // movementSection으로 전환
+});
+document.getElementById('allStockTab').addEventListener('click', function () {
+  activateTab('allStockSection');
+});
+
+// 탭 활성화 함수
+function activateTab(sectionId) {
+  // 모든 섹션 숨기기
+  var sections = document.querySelectorAll('.section');
+  sections.forEach(function (section) {
+    section.classList.remove('active');
+  });
+
+  // 모든 탭 비활성화
+  var tabs = document.querySelectorAll('.tab-button');
+  tabs.forEach(function (tab) {
+    tab.classList.remove('active');
+  });
+
+  // 해당 섹션 활성화
+  document.getElementById(sectionId).classList.add('active');
+
+  // 해당 탭 활성화
+  var activeTab = document.getElementById(sectionId.replace('Section', 'Tab'));
+  activeTab.classList.add('active');
+}
+//----------------탭 관련 끝 ---------
+//영어->한글로 번역해서 출력
+
+var convertToKorean = function convertToKorean(name) {
+  var conversionMap = {
+    "pedro_ivory": "페드로 아이보리",
+    "pedro_gray": "페드로 그레이",
+    "pedro_blue": "페드로 블루",
+    "erica_white": "에리카 화이트",
+    "erica_navy": "에리카 네이비",
+    "erica_beige": "에리카 베이지",
+    "dotori_white": "도토리 화이트",
+    "dotori_coffee": "도토리 커피",
+    "rouen_gray": "루앙 그레이",
+    "rouen_beige": "루앙 베이지",
+    "rouen_gold": "루앙 골드",
+    "rouen_pink": "루앙 핑크",
+    "encia_white": "엔시아 화이트",
+    "encia_orange": "엔시아 오렌지",
+    "sobok_white": "소복소복 화이트",
+    "sobok_gray": "소복소복 그레이",
+    "sobok_indipink": "소복소복 인디핑크",
+    "lavender_gold": "라벤더 골드",
+    "iris_blue": "아이리스 블루",
+    "tatiana_rose": "타티아나 로즈",
+    "ronze_gray": "론즈 연회색",
+    "magritte_gray": "마그리트 연회색",
+    "magritte_denim": "마그리트 데님",
+    "magritte_beige": "마그리트 베이지",
+    "thistle_gray": "엉겅퀴 연회색",
+    "thistle_denim": "엉겅퀴 데님",
+    "thistle_kahki": "엉겅퀴 쑥색",
+    "30x50_cushion": "30x50 쿠션",
+    "40_cushion": "40 쿠션",
+    "50_cushion": "50 쿠션",
+    "45_basic": "45 기본형",
+    "50_basic": "50 기본형",
+    "50_frame": "50 액자형",
+    "60_basic": "60 기본형",
+    "45_winged": "45 날개형",
+    "50_winged": "50 날개형",
+    "hexagon_hanger": "육각형 등걸이",
+    "rectangle_hanger": "직사각 등걸이",
+    "frame_hanger": "액자형 등걸이",
+    "50_basic_back": "50 기본형 뒷지",
+    "45_winged_back": "45 날개형 뒷지",
+    "50_winged_back": "50 날개형 뒷지",
+    "finished": "완제품",
+    "embroidery": "자수물",
+    "cutting": "재단물",
+    "loose": "낱마",
+    "cut": "절"
+  };
+  return conversionMap[name] || name;
+};
+
+// 1. 한글 초성 추출 함수
+function extractInitials(str) {
+  var KOREAN_START = 0xAC00; // 가
+  var KOREAN_END = 0xD7A3; // 힣
+  var INITIALS = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+  var result = "";
+  var _iterator = _createForOfIteratorHelper(str),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var _char = _step.value;
+      var code = _char.charCodeAt(0);
+      if (code >= KOREAN_START && code <= KOREAN_END) {
+        // 한글 초성 추출
+        var initialIndex = Math.floor((code - KOREAN_START) / 588);
+        result += INITIALS[initialIndex];
+      } else {
+        // 한글 외 문자 그대로 사용
+        result += _char;
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return result;
+}
+
+// 2. 검색 조건 매칭 함수
+function matchesSearchTerm(term, data) {
+  var lowerTerm = term.toLowerCase();
+  var lowerData = data.toLowerCase();
+
+  // 부분 문자열 매칭
+  if (lowerData.includes(lowerTerm)) {
+    return true;
+  }
+
+  // 초성 매칭
+  var initials = extractInitials(data);
+  return initials.includes(lowerTerm);
+}
+
+// Firebase 설정 및 초기화
 
 
 var firebaseConfig = {
@@ -6320,134 +6496,301 @@ var firebaseConfig = {
   messagingSenderId: "72793368901",
   appId: "1:72793368901:web:55e93af625bf0c9193362c"
 };
-var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_2__.initializeApp)(firebaseConfig);
-var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.getDatabase)(app);
-document.addEventListener('DOMContentLoaded', function () {
-  // 탭 전환
-  document.getElementById('searchTab').addEventListener('click', function () {
-    activateTab('searchSection');
-  });
-  document.getElementById('movementTab').addEventListener('click', function () {
-    activateTab('movementSection');
-  });
-  document.getElementById('allStockTab').addEventListener('click', function () {
-    activateTab('allStockSection');
-  });
-  function activateTab(sectionId) {
-    var sections = document.querySelectorAll('.section');
-    sections.forEach(function (section) {
-      section.classList.remove('active');
-    });
-    var tabs = document.querySelectorAll('.tab-button');
-    tabs.forEach(function (tab) {
-      tab.classList.remove('active');
-    });
-    document.getElementById(sectionId).classList.add('active');
-    var activeTab = document.getElementById(sectionId.replace('Section', 'Tab'));
-    activeTab.classList.add('active');
+var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
+var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)(app);
+
+//---------- 섹션 1 (제품검색) ----------
+
+// 제품 검색 기능
+document.getElementById('searchBtn').addEventListener('click', function () {
+  var searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!searchTerm) {
+    alert('제품명을 입력해주세요.');
+    return;
   }
-
-  // 입고/출고 처리 함수
-  function updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount) {
-    var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.ref)(db, 'stocks/' + stockDate + '/' + product + '/' + size + '/' + type);
-    (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.onValue)(productRef, function (snapshot) {
-      var data = snapshot.val();
-      if (data) {
-        var currentStock = data.currentStock; // 기존 재고
-        var incoming = data.incoming || 0; // 기존 입고
-        var outgoing = data.outgoing || 0; // 기존 출고
-        var neededAmount = data.neededAmount; // 생산 필요량
-
-        var newIncoming = incoming + incomingAmount; // 입고 수량 갱신
-        var newOutgoing = outgoing + outgoingAmount; // 출고 수량 갱신
-        var remainingStock = currentStock + newIncoming - newOutgoing; // 남은 재고 계산
-
-        (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.set)(productRef, {
-          currentStock: currentStock,
-          // 기존 재고
-          incoming: newIncoming,
-          // 입고 수량
-          outgoing: newOutgoing,
-          // 출고 수량
-          remainingStock: remainingStock,
-          // 남은 재고
-          neededAmount: neededAmount // 생산 필요량
-        }).then(function () {
-          alert('재고 정보가 갱신되었습니다.');
-        })["catch"](function (error) {
-          console.error('재고 정보 갱신 실패:', error);
-          alert('재고 정보 갱신에 실패했습니다.');
-        });
-      } else {
-        console.log('해당 제품에 대한 재고 정보가 없습니다.');
-      }
-    });
-  }
-
-  // 입고/출고 처리 버튼 클릭
-  document.getElementById('submitMovementButton').addEventListener('click', function () {
-    var stockDate = document.getElementById('stockDate').value;
-    var product = document.getElementById('product').value;
-    var size = document.getElementById('size').value;
-    var type = document.getElementById('type').value;
-    var incomingAmount = parseInt(document.getElementById('incomingAmount').value);
-    var outgoingAmount = parseInt(document.getElementById('outgoingAmount').value);
-    if (stockDate && product && size && type && !isNaN(incomingAmount) && !isNaN(outgoingAmount)) {
-      updateStockMovement(stockDate, product, size, type, incomingAmount, outgoingAmount);
-    } else {
-      alert('모든 필드를 입력해주세요.');
-    }
-  });
-
-  // 검색 기능 (기존 코드)
-  document.getElementById('searchBtn').addEventListener('click', function () {
-    var searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-    if (searchTerm) {
-      searchProducts(searchTerm);
-    }
-  });
-  function searchProducts(searchTerm) {
-    var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.ref)(db, 'stocks');
-    (0,firebase_database__WEBPACK_IMPORTED_MODULE_3__.onValue)(productsRef, function (snapshot) {
-      var data = snapshot.val();
-      var filteredProducts = [];
-      for (var product in data) {
-        if (product.toLowerCase().includes(searchTerm)) {
-          filteredProducts.push(data[product]);
-        }
-      }
-      updateSearchTable(filteredProducts);
-    });
-  }
-  function updateSearchTable(products) {
-    var tableBody = document.getElementById('searchResults').querySelector('tbody');
-    tableBody.innerHTML = '';
-    if (products.length === 0) {
-      var noResultsRow = tableBody.insertRow();
-      var cell = noResultsRow.insertCell(0);
-      cell.colSpan = 5;
-      cell.textContent = "검색 결과가 없습니다.";
+  searchProducts(searchTerm);
+});
+function searchProducts(searchTerm) {
+  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks');
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productsRef, function (snapshot) {
+    var data = snapshot.val();
+    if (!data) {
+      alert('Firebase에 데이터가 없습니다.');
+      updateSearchTable([]); // 검색 결과 없을 때 테이블 초기화
       return;
     }
-    products.forEach(function (product) {
-      for (var size in product) {
-        for (var type in product[size]) {
-          var stockItem = product[size][type];
-          var row = tableBody.insertRow();
-          row.innerHTML = "\n                        <td></td>\n                        <td>".concat(convertToKorean(size), "</td>\n                        <td>").concat(convertToKorean(type), "</td>\n                        <td>").concat(stockItem.stockAmount, "</td>\n                        <td>").concat(stockItem.neededAmount, "</td>\n                    ");
+    var results = [];
+    for (var date in data) {
+      var dailyData = data[date];
+      for (var product in dailyData) {
+        if (matchesSearchTerm(searchTerm, product) ||
+        // 제품명
+        matchesSearchTerm(searchTerm, convertToKorean(product)) // 한글 변환된 이름
+        ) {
+          var productData = dailyData[product];
+          results.push({
+            date: date,
+            product: product,
+            details: productData
+          });
         }
       }
-    });
+    }
+    if (results.length === 0) {
+      alert('검색 결과가 없습니다.');
+    }
+    updateSearchTable(results);
+  });
+}
+
+// 검색 결과 테이블 업데이트 함수
+function updateSearchTable(results) {
+  var tableBody = document.getElementById('searchResults').querySelector('tbody');
+  tableBody.innerHTML = ''; // 기존 데이터 초기화
+
+  if (results.length === 0) {
+    var noResultsRow = tableBody.insertRow();
+    var cell = noResultsRow.insertCell(0);
+    cell.colSpan = 8; // 테이블의 열 개수
+    cell.textContent = "검색 결과가 없습니다.";
+    return;
+  }
+  results.forEach(function (result) {
+    var date = result.date,
+      product = result.product,
+      details = result.details;
+    for (var size in details) {
+      for (var type in details[size]) {
+        var stockItem = details[size][type];
+        var row = tableBody.insertRow();
+        row.innerHTML = "\n                    <td>".concat(date, "</td>\n                    <td>").concat(convertToKorean(product), "</td>\n                    <td>").concat(convertToKorean(size), "</td>\n                    <td>").concat(convertToKorean(type), "</td>\n                    <td>").concat(stockItem.stockAmount || 0, "</td>\n                    <td>").concat(stockItem.incomingAmount || 0, "</td>\n                    <td>").concat(stockItem.outgoingAmount || 0, "</td>\n                    <td>").concat(stockItem.neededAmount || 0, "</td>\n                ");
+      }
+    }
+  });
+}
+
+//----------섹션 2 (재고 입력)------------
+
+document.getElementById('submitButton').addEventListener('click', function () {
+  var _document$getElementB, _document$getElementB2, _document$getElementB3, _document$getElementB4, _document$getElementB5, _document$getElementB6, _document$getElementB7, _document$getElementB8;
+  var stockDate = ((_document$getElementB = document.getElementById('stockDate')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value) || '';
+  var product = ((_document$getElementB2 = document.getElementById('product')) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.value) || '';
+  var size = ((_document$getElementB3 = document.getElementById('size')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.value) || '';
+  var type = ((_document$getElementB4 = document.getElementById('type')) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value) || '';
+  var stockAmountValue = ((_document$getElementB5 = document.getElementById('stockAmount')) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.value) || '';
+  var neededAmountValue = ((_document$getElementB6 = document.getElementById('neededAmount')) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.value) || '';
+  var incomingAmountValue = ((_document$getElementB7 = document.getElementById('incomingAmount')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) || ''; // 입고 수량
+  var outgoingAmountValue = ((_document$getElementB8 = document.getElementById('outgoingAmount')) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.value) || ''; // 출고 수량
+
+  var stockAmount = parseInt(stockAmountValue);
+  var neededAmount = parseInt(neededAmountValue);
+  var incomingAmount = parseInt(incomingAmountValue);
+  var outgoingAmount = parseInt(outgoingAmountValue);
+  console.log("Input values:", {
+    stockDate: stockDate,
+    product: product,
+    size: size,
+    type: type,
+    stockAmount: stockAmount,
+    neededAmount: neededAmount,
+    incomingAmount: incomingAmount,
+    outgoingAmount: outgoingAmount
+  });
+
+  // 유효성 검사
+  if (!stockDate || !product || !size || !type || isNaN(stockAmount) || isNaN(neededAmount) || isNaN(incomingAmount) || isNaN(outgoingAmount)) {
+    alert('모든 필드를 올바르게 입력해주세요.');
+    return;
   }
 
-  // 한글로 변환 함수 (기존 코드)
-  var convertToKorean = function convertToKorean(name) {
-    var conversionMap = {
-      // 영어 -> 한글 변환
-    };
-    return conversionMap[name] || name;
-  };
+  // 데이터 저장 호출
+  saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
 });
+
+// Firebase에 재고 데이터 저장
+
+function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
+  if (!stockDate || !product || !size || !type || stockAmount === undefined || neededAmount === undefined || incomingAmount === undefined || outgoingAmount === undefined) {
+    console.error('저장할 데이터에 undefined 값이 포함되어 있습니다.');
+    alert('저장할 수 없습니다. 입력값을 확인해주세요.');
+    return;
+  }
+
+  // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
+  var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, "stocks/".concat(stockDate, "/").concat(product, "/").concat(size, "/").concat(type));
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.set)(productRef, {
+    stockAmount: stockAmount,
+    neededAmount: neededAmount,
+    incomingAmount: incomingAmount,
+    outgoingAmount: outgoingAmount
+  }).then(function () {
+    alert('재고 정보가 저장되었습니다.');
+    document.getElementById('stockForm').reset(); // 폼 초기화
+  })["catch"](function (error) {
+    console.error('데이터 저장 실패:', error);
+    alert('재고 정보를 저장하는데 실패했습니다.');
+  });
+}
+
+// 테이블 셀 클릭 시 수정 가능하게 만들기
+document.addEventListener('DOMContentLoaded', function () {
+  var table = document.getElementById('allStockTable');
+  table.addEventListener('click', function (event) {
+    var cell = event.target;
+    if (cell.classList.contains('editable')) {
+      var currentValue = cell.textContent;
+      var fieldName = cell.dataset.field;
+
+      // 입력 필드로 바꾸기
+      var inputField = document.createElement('input');
+      inputField.value = currentValue;
+      cell.textContent = '';
+      cell.appendChild(inputField);
+      inputField.addEventListener('blur', function () {
+        var newValue = inputField.value;
+        cell.textContent = newValue;
+
+        // Firebase에서 데이터 업데이트 (기존 데이터 덮어쓰기)
+        var row = cell.closest('tr');
+        var product = row.querySelector('[data-field="product"]').textContent;
+        var size = row.querySelector('[data-field="size"]').textContent;
+        var type = row.querySelector('[data-field="type"]').textContent;
+        var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)();
+        var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, "stocks/".concat(product, "/").concat(size, "/").concat(type));
+        var currentData = {
+          stockAmount: row.querySelector('[data-field="stockAmount"]').textContent,
+          neededAmount: row.querySelector('[data-field="neededAmount"]').textContent
+        };
+        (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.set)(productRef, _objectSpread(_objectSpread({}, currentData), {}, _defineProperty({}, fieldName, newValue))).then(function () {
+          console.log("Updated ".concat(fieldName, " to ").concat(newValue));
+        })["catch"](function (error) {
+          console.error("Update failed:", error);
+        });
+      });
+    }
+  });
+
+  // 삭제 버튼 클릭 시 데이터 Firebase에서 제거 
+  table.addEventListener('click', function (event) {
+    var button = event.target;
+    if (button.classList.contains('delete-btn')) {
+      var row = button.closest('tr');
+      var product = row.querySelector('[data-field="product"]').textContent;
+      var size = row.querySelector('[data-field="size"]').textContent;
+      var type = row.querySelector('[data-field="type"]').textContent;
+      row.remove();
+      var _db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)();
+      var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(_db, "stocks/".concat(product, "/").concat(size, "/").concat(type));
+
+      // Firebase에서 데이터 삭제
+      (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.remove)(productRef).then(function () {
+        console.log("Deleted data for ".concat(product, " ").concat(size, " ").concat(type));
+        row.remove();
+      })["catch"](function (error) {
+        console.error("Delete failed:", error);
+      });
+    }
+  });
+});
+
+// 전체 재고 테이블 업데이트
+function updateAllStockTable(products) {
+  var tableBody = document.getElementById('allStockTable').querySelector('tbody');
+  tableBody.innerHTML = '';
+  if (products.length === 0) {
+    var noResultsRow = tableBody.insertRow();
+    var cell = noResultsRow.insertCell(0);
+    cell.colSpan = 7;
+    cell.textContent = "전체 재고가 없습니다.";
+    return;
+  }
+  products.forEach(function (product) {
+    var productName = Object.keys(product)[0];
+    var productNameKorean = convertToKorean(productName);
+    for (var size in product[productName]) {
+      for (var type in product[productName][size]) {
+        if (product[productName][size].hasOwnProperty(type)) {
+          var stockItem = product[productName][size][type];
+          var row = tableBody.insertRow();
+          row.innerHTML = "\n                            <td class=\"editable\" data-field=\"product\">".concat(productNameKorean, "</td>\n                            <td class=\"editable\" data-field=\"size\">").concat(convertToKorean(size), "</td>\n                            <td class=\"editable\" data-field=\"type\">").concat(convertToKorean(type), "</td>\n                            <td class=\"editable\" data-field=\"stockAmount\">").concat(stockItem.stockAmount, "</td>\n                            <td class=\"editable\" data-field=\"neededAmount\">").concat(stockItem.neededAmount, "</td>\n                            <td><button class=\"edit-btn\">\uC218\uC815</button></td>\n                            <td><button class=\"delete-btn\">\uC0AD\uC81C</button></td>\n                ");
+        }
+      }
+    }
+  });
+}
+
+// Firebase에서 전체 재고 정보 불러오기
+function loadAllStock() {
+  var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks'); // Firebase에서 재고 정보 가져오기
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productsRef, function (snapshot) {
+    var data = snapshot.val();
+    if (data === null) {
+      console.log("Firebase에서 데이터를 불러오지 못했습니다.");
+      return;
+    }
+    var allProducts = [];
+
+    // 전체 제품 정보 불러오기
+    for (var product in data) {
+      allProducts.push(_defineProperty({}, product, data[product]));
+    }
+
+    // 전체 재고 테이블 업데이트
+    updateAllStockTable(allProducts);
+  }, function (error) {
+    console.error("Firebase 데이터 로딩 오류:", error);
+  });
+}
+
+// 페이지가 로드될 때 전체 재고를 불러옴
+window.onload = function () {
+  loadAllStock(); // Firebase에서 전체 재고를 불러와서 테이블 갱신
+};
+
+//----------- 섹션 4 날짜별 입출고 기록
+
+//1. 기록 보기 버튼 이벤트 추가
+document.getElementById('viewLogsButton').addEventListener('click', function () {
+  var logDate = document.getElementById('logDate').value;
+  if (logDate) {
+    loadDailyLogs(logDate); // 날짜별 기록 불러오기
+  } else {
+    alert('날짜를 선택해주세요.');
+  }
+});
+
+//2. 날짜별 기록 데이터 로드 함수
+function loadDailyLogs(date) {
+  var logsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, "logs/".concat(date)); // 날짜별 Firebase 경로
+  (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(logsRef, function (snapshot) {
+    var data = snapshot.val();
+    updateDailyLogsTable(date, data);
+  }, function (error) {
+    console.error('Firebase 기록 로딩 오류:', error);
+    alert('기록 데이터를 로드하는 중 오류가 발생했습니다.');
+  });
+}
+
+//3. 테이블 업데이트 함수
+function updateDailyLogsTable(date, logs) {
+  var tableBody = document.getElementById('dailyLogsTable').querySelector('tbody');
+  tableBody.innerHTML = ''; // 기존 데이터 초기화
+
+  if (!logs) {
+    var noDataRow = tableBody.insertRow();
+    var cell = noDataRow.insertCell(0);
+    cell.colSpan = 6;
+    cell.textContent = "".concat(date, "\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.");
+    return;
+  }
+
+  // 로그 데이터 테이블에 추가
+  for (var product in logs) {
+    var productData = logs[product];
+    var row = tableBody.insertRow();
+    row.innerHTML = "\n            <td>".concat(date, "</td>\n            <td>").concat(convertToKorean(product), "</td>\n            <td>").concat(productData.stockAmount || 0, "</td>\n            <td>").concat(productData.neededAmount || 0, "</td>\n            <td>").concat(productData.incomingAmount || 0, "</td>\n            <td>").concat(productData.outgoingAmount || 0, "</td>\n        ");
+  }
+}
 
 /***/ }),
 

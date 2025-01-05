@@ -436,6 +436,8 @@ function updateAllStockTable(products) {
             <td>${convertToKorean(product.type)}</td>
             <td>${remainingStock}</td> <!-- 계산된 남은 재고 표시 -->
             <td>${product.neededAmount || 0}</td>
+            <td><button class="edit-btn">수정</button></td>
+            <td><button class="delete-btn">삭제</button></td>
         `;
     });
 }
