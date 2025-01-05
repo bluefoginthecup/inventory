@@ -398,28 +398,18 @@ function saveRowChanges(row) {
         }
     });
 
-
-    console.log('Updated Data:', updatedData); // 확인용 로그
-    // Firebase로 업데이트
     const date = row.querySelector('[data-field="date"]').textContent.trim();
     const product = row.querySelector('[data-field="product"]').textContent.trim();
     const size = row.querySelector('[data-field="size"]').textContent.trim();
     const type = row.querySelector('[data-field="type"]').textContent.trim();
 
-    const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
-
+  const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
     set(dbRef, updatedData)
-        .then(() => {
-            console.log('Firebase 업데이트 성공:', updatedData);
-            alert('수정이 완료되었습니다.');
-        })
-        .catch(error => {console.error('Firebase 업데이트 실패:', error);
-                        alert('Firebase 업데이트 중 오류가 발생했습니다.');
-        });
+        .then(() => alert('수정이 완료되었습니다.'))
+        .catch(error => console.error('Firebase 업데이트 실패:', error));
 
     const editButton = row.querySelector('.edit-btn');
     editButton.textContent = '수정';
-    editButton.removeEventListener('click', saveRowChanges); // 저장 이벤트 제거
     editButton.addEventListener('click', () => enableRowEditing(row));
 }
     
@@ -447,17 +437,6 @@ submitButton.addEventListener('click', () => {
         .then(() => alert('재고가 저장되었습니다.'))
         .catch(error => console.error('재고 저장 실패:', error));
 });
-
-    
-document.getElementById('submitButton').addEventListener('click', function () {
-    const stockDate = document.getElementById('stockDate')?.value || ''; 
-    const product = document.getElementById('product')?.value || '';
-    const size = document.getElementById('size')?.value || '';
-    const type = document.getElementById('type')?.value || '';
-    const stockAmountValue = document.getElementById('stockAmount')?.value || '';
-    const neededAmountValue = document.getElementById('neededAmount')?.value || '';
-    const incomingAmountValue = document.getElementById('incomingAmount')?.value || ''; // 입고 수량
-    const outgoingAmountValue = document.getElementById('outgoingAmount')?.value || ''; // 출고 수량
     const stockAmount = parseInt(stockAmountValue);
     const neededAmount = parseInt(neededAmountValue);
     const incomingAmount = parseInt(incomingAmountValue);
@@ -473,7 +452,7 @@ document.getElementById('submitButton').addEventListener('click', function () {
 
     // 데이터 저장 호출
     saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
-});
+
 
 
 // Firebase에 재고 데이터 저장

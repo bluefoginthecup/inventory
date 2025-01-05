@@ -398,9 +398,6 @@ function saveRowChanges(row) {
         }
     });
 
-
-    console.log('Updated Data:', updatedData); // 확인용 로그
-    // Firebase로 업데이트
     const date = row.querySelector('[data-field="date"]').textContent.trim();
     const product = row.querySelector('[data-field="product"]').textContent.trim();
     const size = row.querySelector('[data-field="size"]').textContent.trim();

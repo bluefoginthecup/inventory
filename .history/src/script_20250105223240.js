@@ -398,28 +398,18 @@ function saveRowChanges(row) {
         }
     });
 
-
-    console.log('Updated Data:', updatedData); // 확인용 로그
-    // Firebase로 업데이트
     const date = row.querySelector('[data-field="date"]').textContent.trim();
     const product = row.querySelector('[data-field="product"]').textContent.trim();
     const size = row.querySelector('[data-field="size"]').textContent.trim();
     const type = row.querySelector('[data-field="type"]').textContent.trim();
 
-    const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
-
+  const dbRef = ref(db, `stocks/${date}/${product}/${size}/${type}`);
     set(dbRef, updatedData)
-        .then(() => {
-            console.log('Firebase 업데이트 성공:', updatedData);
-            alert('수정이 완료되었습니다.');
-        })
-        .catch(error => {console.error('Firebase 업데이트 실패:', error);
-                        alert('Firebase 업데이트 중 오류가 발생했습니다.');
-        });
+        .then(() => alert('수정이 완료되었습니다.'))
+        .catch(error => console.error('Firebase 업데이트 실패:', error));
 
     const editButton = row.querySelector('.edit-btn');
     editButton.textContent = '수정';
-    editButton.removeEventListener('click', saveRowChanges); // 저장 이벤트 제거
     editButton.addEventListener('click', () => enableRowEditing(row));
 }
     
