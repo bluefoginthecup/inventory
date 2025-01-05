@@ -309,23 +309,20 @@ function updateAllStockTable(products) {
                             <td class="editable" data-field="neededAmount">${stockItem.neededAmount}</td>
                             <td><button class="edit-btn">수정</button></td>
                             <td><button class="delete-btn">삭제</button></td>
-                `;               
+                `;
+                
                 }
             }
         }
-    });
-}
+    })
+
+};    
 
 // Firebase에서 전체 재고 정보 불러오기
 function loadAllStock() {
     const productsRef = ref(db, 'stocks'); // Firebase에서 재고 정보 가져오기
     onValue(productsRef, (snapshot) => {
         const data = snapshot.val();
-         
-        if (data === null) {
-            console.log("Firebase에서 데이터를 불러오지 못했습니다.");
-            return;
-        }
         const allProducts = [];
 
         // 전체 제품 정보 불러오기
@@ -335,9 +332,6 @@ function loadAllStock() {
 
         // 전체 재고 테이블 업데이트
         updateAllStockTable(allProducts);
-    
-    }, (error) => {
-        console.error("Firebase 데이터 로딩 오류:", error);
     });
 }
 
