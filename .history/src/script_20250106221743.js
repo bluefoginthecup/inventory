@@ -325,30 +325,6 @@ document.getElementById('submitButton').addEventListener('click', function (even
   
 
 
-// Firebase에 재고 데이터 저장
-
-function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
-    console.log('saveStockData 호출됨:', { stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount });
-
-   
-    // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
-     const productRef = ref(db, `stocks/${stockDate}/${product}/${size}/${type}`);
-
-    set(productRef, {
-        stockAmount: stockAmount,
-        neededAmount: neededAmount,
-        incomingAmount: incomingAmount,
-        outgoingAmount: outgoingAmount,
-    })
-        .then(() => {
-            alert('재고 정보가 저장되었습니다.');
-            document.getElementById('stockForm').reset(); // 폼 초기화
-        })
-        .catch((error) => {
-            console.error('데이터 저장 실패:', error);
-            alert('재고 정보를 저장하는데 실패했습니다.');
-        });
-}
 
 
 // Firebase에서 전체 재고 정보 불러오기

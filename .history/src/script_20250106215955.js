@@ -292,7 +292,6 @@ function updateSearchTable(results) {
 // ---------- 섹션 2: 재고 입력 ----------
 
 
-
 document.getElementById('submitButton').addEventListener('click', function (event) {
     event.preventDefault(); // 기본 동작 방지
 
@@ -328,10 +327,7 @@ document.getElementById('submitButton').addEventListener('click', function (even
 // Firebase에 재고 데이터 저장
 
 function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
-    console.log('saveStockData 호출됨:', { stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount });
-
-   
-    // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
+     // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
      const productRef = ref(db, `stocks/${stockDate}/${product}/${size}/${type}`);
 
     set(productRef, {

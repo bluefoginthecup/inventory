@@ -292,46 +292,67 @@ function updateSearchTable(results) {
 // ---------- 섹션 2: 재고 입력 ----------
 
 
+const submitButton = document.getElementById('submitButton');
+submitButton.addEventListener('click', () => {
+    const stockDate = document.getElementById('stockDate').value;
+    const product = document.getElementById('product').value;
+    const size = document.getElementById('size').value;
+    const type = document.getElementById('type').value;
+    const stockAmount = parseInt(document.getElementById('stockAmount').value, 10) || 0;
+    const incomingAmount = parseInt(document.getElementById('incomingAmount').value, 10) || 0;
+    const outgoingAmount = parseInt(document.getElementById('outgoingAmount').value, 10) || 0;
+    const neededAmount = parseInt(document.getElementById('neededAmount').value, 10) || 0;
+    const dbRef = ref(db, `stocks/${stockDate}/${product}/${size}/${type}`);    
+    set(dbRef, {
+        stockAmount,
+        incomingAmount,
+        outgoingAmount,
+        neededAmount
+    })
+        .then(() => alert('재고가 저장되었습니다.'))
+        .catch(error => console.error('재고 저장 실패:', error));
+});
 
-document.getElementById('submitButton').addEventListener('click', function (event) {
-    event.preventDefault(); // 기본 동작 방지
+    
+document.getElementById('submitButton').addEventListener('click', function () {
+    const stockDate = document.getElementById('stockDate')?.value || ''; 
+    const product = document.getElementById('product')?.value || '';
+    const size = document.getElementById('size')?.value || '';
+    const type = document.getElementById('type')?.value || '';
+    const stockAmountValue = document.getElementById('stockAmount')?.value || '';
+    const neededAmountValue = document.getElementById('neededAmount')?.value || '';
+    const incomingAmountValue = document.getElementById('incomingAmount')?.value || ''; // 입고 수량
+    const outgoingAmountValue = document.getElementById('outgoingAmount')?.value || ''; // 출고 수량
+    const stockAmount = parseInt(stockAmountValue,10);
+    const neededAmount = parseInt(neededAmountValue,10);
+    const incomingAmount = parseInt(incomingAmountValue,10);
+    const outgoingAmount = parseInt(outgoingAmountValue,10);
 
-    const stockDate = document.getElementById('stockDate')?.value.trim(); 
-    const product = document.getElementById('product')?.value.trim();
-    const size = document.getElementById('size')?.value.trim();
-    const type = document.getElementById('type')?.value.trim();
-    const stockAmount = parseInt(document.getElementById('stockAmount')?.value.trim(), 10) || 0;
-    const neededAmount = parseInt(document.getElementById('neededAmount')?.value.trim(), 10) || 0;
-    const incomingAmount = parseInt(document.getElementById('incomingAmount')?.value.trim(), 10) || 0;
-    const outgoingAmount = parseInt(document.getElementById('outgoingAmount')?.value.trim(), 10) || 0;
+    console.log("Input values:", { stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount });
 
-    console.log(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
-
-
-    // 유효성 검사
-    if (!stockDate) {
+     // 유효성 검사
+     if (!stockDate) {
         alert('날짜를 입력해주세요.');
-        return;
+        return; // 날짜 입력이 없으면 저장 중단
     }
     if (!product || !size || !type) {
         alert('제품, 크기 또는 유형을 입력해주세요.');
-        return;
+        return; // 필수 항목이 없으면 저장 중단
+    }
+    if (isNaN(stockAmount) || isNaN(neededAmount) || isNaN(incomingAmount) || isNaN(outgoingAmount)) {
+        alert('숫자를 올바르게 입력해주세요.');
+        return; // 수량 입력이 올바르지 않으면 저장 중단
     }
 
     // 데이터 저장 호출
     saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
 });
 
-  
-
 
 // Firebase에 재고 데이터 저장
 
 function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
-    console.log('saveStockData 호출됨:', { stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount });
-
-   
-    // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
+     // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
      const productRef = ref(db, `stocks/${stockDate}/${product}/${size}/${type}`);
 
     set(productRef, {

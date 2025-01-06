@@ -292,7 +292,6 @@ function updateSearchTable(results) {
 // ---------- 섹션 2: 재고 입력 ----------
 
 
-
 document.getElementById('submitButton').addEventListener('click', function (event) {
     event.preventDefault(); // 기본 동작 방지
 

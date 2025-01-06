@@ -319,12 +319,10 @@ document.getElementById('submitButton').addEventListener('click', function (even
     }
 
     // 데이터 저장 호출
-    saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
+    //saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
 });
 
   
-
-
 // Firebase에 재고 데이터 저장
 
 function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
@@ -349,6 +347,8 @@ function saveStockData(stockDate, product, size, type, stockAmount, neededAmount
             alert('재고 정보를 저장하는데 실패했습니다.');
         });
 }
+
+
 
 
 // Firebase에서 전체 재고 정보 불러오기

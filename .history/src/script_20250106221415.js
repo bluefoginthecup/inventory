@@ -318,8 +318,6 @@ document.getElementById('submitButton').addEventListener('click', function (even
         return;
     }
 
-    // 데이터 저장 호출
-    saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
 });
 
   
