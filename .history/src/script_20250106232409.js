@@ -283,20 +283,11 @@ function updateSearchTable(results) {
                     <td data-field="neededAmount">${stockItem.neededAmount || 0}</td>
                     <td><button class="edit-btn">수정</button></td>
                 `;
-              
                 
             }
         }
     });
 }
-
-// 수정 버튼 이벤트 리스너 추가
-document.getElementById('searchResults').addEventListener('click', (event) => {
-    if (event.target.classList.contains('edit-btn')) {
-        const row = event.target.closest('tr');
-        enableRowEditing(row);
-    }
-});
 
 // 행 편집 활성화 (날짜만 편집 가능)
 function enableRowEditing(row, date, product, size, type) {

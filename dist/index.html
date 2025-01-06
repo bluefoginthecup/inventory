@@ -26,20 +26,34 @@
             <table id="searchResults">
                 <thead>
                     <tr>
-                        <th>날짜</th>
-                        <th>제품</th>
-                        <th>사이즈</th>
-                        <th>재고 종류</th>
-                        <th>기존 재고</th>
-                        <th>입고 수량</th>
-                        <th>출고 수량</th>
-                        <th>남은 재고</th>
-                        <th>필요량</th>
+                        <th data-field="date" data-editable="true">날짜</th>
+                        <th data-field="product" data-editable="true">제품</th>
+                        <th data-field="size" data-editable="true">사이즈</th>
+                        <th data-field="type" data-editable="true">재고 종류</th>
+                        <th data-field="stockAmount" data-editable="true">기존 재고</th>
+                        <th data-field="incomingAmount" data-editable="true">입고 수량</th>
+                        <th data-field="outgoingAmount" data-editable="true">출고 수량</th>
+                        <th>남은 재고</th> <!-- 수정 불가 -->
+                        <th data-field="neededAmount" data-editable="true">필요량</th>
+                        <th>수정</th>
                         
                     </tr>
                 </thead>
                 <tbody>
                     <!-- 검색 결과 테이블 -->
+                     <!-- 예제 행 -->
+                        <tr>
+                            <td data-field="date" data-editable="true">2025-01-05</td>
+                            <td data-field="product" data-editable="true">페드로 블루</td>
+                            <td data-field="size" data-editable="true">30x50 쿠션</td>
+                            <td data-field="type" data-editable="true">완제품</td>
+                            <td data-field="stockAmount" data-editable="true">10</td>
+                            <td data-field="incomingAmount" data-editable="true">5</td>
+                            <td data-field="outgoingAmount" data-editable="true">3</td>
+                            <td>12</td> <!-- 남은 재고 -->
+                            <td data-field="neededAmount" data-editable="true">2</td>
+                            <td><button class="edit-btn">수정</button></td>
+                        </tr>
                 </tbody>
             </table>
         </section>
@@ -144,6 +158,5 @@
         </section>
     </div>
 
-    <script src="bundle.js"></script>
 </body>
 </html>

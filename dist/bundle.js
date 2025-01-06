@@ -6316,6 +6316,9 @@ document.addEventListener('DOMContentLoaded', function () {
   var movementTab = document.getElementById('movementTab'); // 올바른 ID
   var allStockTab = document.getElementById('allStockTab');
   var stockDateInput = document.getElementById('stockDate');
+
+  //입출고날짜 오늘 날짜로 디폴트 입력
+
   if (stockDateInput) {
     var today = new Date();
     var year = today.getFullYear();
@@ -6324,6 +6327,9 @@ document.addEventListener('DOMContentLoaded', function () {
     stockDateInput.value = "".concat(year, "-").concat(month, "-").concat(day);
   }
   ;
+
+  //탭 버튼 클릭시 탭 활성화
+
   if (searchTab) {
     searchTab.addEventListener('click', function () {
       activateTab('searchSection');
@@ -6493,10 +6499,11 @@ var firebaseConfig = {
 var app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
 var db = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.getDatabase)(app);
 
-//---------- 섹션 1 (제품검색) ----------
+// ---------- 섹션 1: 날짜별 기록 ----------
 
-// 제품 검색 기능
-document.getElementById('searchBtn').addEventListener('click', function () {
+// 검색 버튼 이벤트 추가
+var searchBtn = document.getElementById('searchBtn');
+searchBtn.addEventListener('click', function () {
   var searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
   if (!searchTerm) {
     alert('제품명을 입력해주세요.');
@@ -6504,13 +6511,15 @@ document.getElementById('searchBtn').addEventListener('click', function () {
   }
   searchProducts(searchTerm);
 });
+
+// Firebase에서 제품 검색
 function searchProducts(searchTerm) {
   var productsRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, 'stocks');
   (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.onValue)(productsRef, function (snapshot) {
     var data = snapshot.val();
     if (!data) {
       alert('Firebase에 데이터가 없습니다.');
-      updateSearchTable([]); // 검색 결과 없을 때 테이블 초기화
+      updateSearchTable([]);
       return;
     }
     var results = [];
@@ -6537,7 +6546,7 @@ function searchProducts(searchTerm) {
   });
 }
 
-// "검색결과 테이블" 업데이트 함수
+// "검색결과 테이블" 업데이트
 function updateSearchTable(results) {
   var tableBody = document.getElementById('searchResults').querySelector('tbody');
   tableBody.innerHTML = ''; // 기존 데이터 초기화
@@ -6545,7 +6554,7 @@ function updateSearchTable(results) {
   if (results.length === 0) {
     var noResultsRow = tableBody.insertRow();
     var cell = noResultsRow.insertCell(0);
-    cell.colSpan = 9; // 테이블의 열 개수
+    cell.colSpan = 10; // 테이블의 열 개수
     cell.textContent = "검색 결과가 없습니다.";
     return;
   }
@@ -6559,43 +6568,35 @@ function updateSearchTable(results) {
         var remainingStock = (stockItem.stockAmount || 0) + (stockItem.incomingAmount || 0) - (stockItem.outgoingAmount || 0); // 남은 재고 계산
 
         var row = tableBody.insertRow();
-        row.innerHTML = "\n                    <td>".concat(date, "</td>\n                    <td>").concat(convertToKorean(product), "</td>\n                    <td>").concat(convertToKorean(size), "</td>\n                    <td>").concat(convertToKorean(type), "</td>\n                    <td>").concat(stockItem.stockAmount || 0, "</td>\n                    <td>").concat(stockItem.incomingAmount || 0, "</td>\n                    <td>").concat(stockItem.outgoingAmount || 0, "</td>\n                    <td>").concat(remainingStock, "</td> <!-- \uB0A8\uC740 \uC7AC\uACE0 \uCD94\uAC00 -->\n                    <td>").concat(stockItem.neededAmount || 0, "</td>\n                ");
+        row.innerHTML = "\n                    <td data-field=\"date\">".concat(date, "</td>\n                    <td data-field=\"product\">").concat(convertToKorean(product), "</td>\n                    <td data-field=\"size\">").concat(convertToKorean(size), "</td>\n                    <td data-field=\"type\">").concat(convertToKorean(type), "</td>\n                    <td data-field=\"stockAmount\">").concat(stockItem.stockAmount || 0, "</td>\n                    <td data-field=\"incomingAmount\">").concat(stockItem.incomingAmount || 0, "</td>\n                    <td data-field=\"outgoingAmount\">").concat(stockItem.outgoingAmount || 0, "</td>\n                    <td>").concat(remainingStock, "</td>\n                    <td data-field=\"neededAmount\">").concat(stockItem.neededAmount || 0, "</td>\n                    <td><button class=\"edit-btn\">\uC218\uC815</button></td>\n                ");
       }
     }
   });
 }
 
-//----------섹션 2 (재고 입력)------------
+// ---------- 섹션 2: 재고 입력 ----------
 
-document.getElementById('submitButton').addEventListener('click', function () {
+document.getElementById('submitButton').addEventListener('click', function (event) {
   var _document$getElementB, _document$getElementB2, _document$getElementB3, _document$getElementB4, _document$getElementB5, _document$getElementB6, _document$getElementB7, _document$getElementB8;
-  var stockDate = ((_document$getElementB = document.getElementById('stockDate')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value) || '';
-  var product = ((_document$getElementB2 = document.getElementById('product')) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.value) || '';
-  var size = ((_document$getElementB3 = document.getElementById('size')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.value) || '';
-  var type = ((_document$getElementB4 = document.getElementById('type')) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value) || '';
-  var stockAmountValue = ((_document$getElementB5 = document.getElementById('stockAmount')) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.value) || '';
-  var neededAmountValue = ((_document$getElementB6 = document.getElementById('neededAmount')) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.value) || '';
-  var incomingAmountValue = ((_document$getElementB7 = document.getElementById('incomingAmount')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value) || ''; // 입고 수량
-  var outgoingAmountValue = ((_document$getElementB8 = document.getElementById('outgoingAmount')) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.value) || ''; // 출고 수량
+  event.preventDefault(); // 기본 동작 방지
 
-  var stockAmount = parseInt(stockAmountValue);
-  var neededAmount = parseInt(neededAmountValue);
-  var incomingAmount = parseInt(incomingAmountValue);
-  var outgoingAmount = parseInt(outgoingAmountValue);
-  console.log("Input values:", {
-    stockDate: stockDate,
-    product: product,
-    size: size,
-    type: type,
-    stockAmount: stockAmount,
-    neededAmount: neededAmount,
-    incomingAmount: incomingAmount,
-    outgoingAmount: outgoingAmount
-  });
+  var stockDate = (_document$getElementB = document.getElementById('stockDate')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value.trim();
+  var product = (_document$getElementB2 = document.getElementById('product')) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.value.trim();
+  var size = (_document$getElementB3 = document.getElementById('size')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.value.trim();
+  var type = (_document$getElementB4 = document.getElementById('type')) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value.trim();
+  var stockAmount = parseInt((_document$getElementB5 = document.getElementById('stockAmount')) === null || _document$getElementB5 === void 0 ? void 0 : _document$getElementB5.value.trim(), 10) || 0;
+  var neededAmount = parseInt((_document$getElementB6 = document.getElementById('neededAmount')) === null || _document$getElementB6 === void 0 ? void 0 : _document$getElementB6.value.trim(), 10) || 0;
+  var incomingAmount = parseInt((_document$getElementB7 = document.getElementById('incomingAmount')) === null || _document$getElementB7 === void 0 ? void 0 : _document$getElementB7.value.trim(), 10) || 0;
+  var outgoingAmount = parseInt((_document$getElementB8 = document.getElementById('outgoingAmount')) === null || _document$getElementB8 === void 0 ? void 0 : _document$getElementB8.value.trim(), 10) || 0;
+  console.log(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount);
 
   // 유효성 검사
-  if (!stockDate || !product || !size || !type || isNaN(stockAmount) || isNaN(neededAmount) || isNaN(incomingAmount) || isNaN(outgoingAmount)) {
-    alert('모든 필드를 올바르게 입력해주세요.');
+  if (!stockDate) {
+    alert('날짜를 입력해주세요.');
+    return;
+  }
+  if (!product || !size || !type) {
+    alert('제품, 크기 또는 유형을 입력해주세요.');
     return;
   }
 
@@ -6606,11 +6607,16 @@ document.getElementById('submitButton').addEventListener('click', function () {
 // Firebase에 재고 데이터 저장
 
 function saveStockData(stockDate, product, size, type, stockAmount, neededAmount, incomingAmount, outgoingAmount) {
-  if (!stockDate || !product || !size || !type || stockAmount === undefined || neededAmount === undefined || incomingAmount === undefined || outgoingAmount === undefined) {
-    console.error('저장할 데이터에 undefined 값이 포함되어 있습니다.');
-    alert('저장할 수 없습니다. 입력값을 확인해주세요.');
-    return;
-  }
+  console.log('saveStockData 호출됨:', {
+    stockDate: stockDate,
+    product: product,
+    size: size,
+    type: type,
+    stockAmount: stockAmount,
+    neededAmount: neededAmount,
+    incomingAmount: incomingAmount,
+    outgoingAmount: outgoingAmount
+  });
 
   // Firebase 경로: stocks/{날짜}/{제품명}/{사이즈}/{재고 종류}
   var productRef = (0,firebase_database__WEBPACK_IMPORTED_MODULE_1__.ref)(db, "stocks/".concat(stockDate, "/").concat(product, "/").concat(size, "/").concat(type));
